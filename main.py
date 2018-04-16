@@ -11,9 +11,11 @@ dict = {'mp3':'Music', 'aac':'Music', 'flac':'Music', 'ogg':'Music', 'wma':'Musi
         'pptx':'Document', 'ppsx':'Document', 'odp':'Document', 'odt':'Document', 'ods':'Document', 'md':'Document', 'json':'Document', 'csv':'Document'
         };
 
-slefTableDict = {'Picture':'picture','Video':'video','Music':'music','Document':'document'};
+classList = ['Picture','Video','Music','Document','Other']
+slefTableDict = {'Picture':'picture','Video':'video','Music':'music','Document':'document','Other':'other'};
 
-direction = "/"
+
+direction = "/home/apteam/Desktop/MySQLTestFiles"
 
 def convert_size(size_bytes):
    if size_bytes == 0:
@@ -24,16 +26,16 @@ def convert_size(size_bytes):
    s = round(size_bytes / p, 2)
    return "%s %s" % (s, size_name[i])
 
-def doInDir(somedir,db):
+def summary(somedir,db):
     fileList = os.listdir(somedir)
     for f in fileList:
         fullpath = os.path.join(somedir, f)
         if os.path.isdir(fullpath):
-            doInDir(fullpath,db)
+            summary(fullpath,db)
         elif os.path.isfile(fullpath):
-            insert(somedir, f,db)
+            insert_to_summary(somedir, f,db)
 
-def insert(somedir,f,db):
+def insert_to_summary(somedir,f,db):
 
     somedir+="/"
 
@@ -47,14 +49,17 @@ def insert(somedir,f,db):
     mtime2 = time.localtime(mtime)
     mtime2_hr = time.strftime("%m/%d/%Y %H:%M:%S", mtime2)
 
+    summarysql = ""
+    ## 5. type 1. name 2. mtime 3. size 4. path
     if file_extension in dict:
+        summarysql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\""
         type = dict[file_extension]
+        summarysql += type
+        summarysql += "\",\""
+
     else:
-        type = "DEFAULT"
+        summarysql = "INSERT INTO summary(name,mtime,size,path) VALUES(\""
 
-
-    ## 1. name 2. mtime 3. size 4. path 5. type
-    summarysql = "INSERT INTO summary VALUE(\""
     summarysql += f
     summarysql += "\",\""
     summarysql += mtime2_hr
@@ -62,32 +67,65 @@ def insert(somedir,f,db):
     summarysql += convert_size(os.stat(somedir + f).st_size)
     summarysql += "\",\""
     summarysql += somedir
-    summarysql += "\",\""
-    summarysql += type
-    summarysql += "\");"
+    summarysql += "\")"
 
-    selfsql = "INSERT INTO "
-    if type == 'DEFAULT':
-        selfsql += "other"
-    else:
-        selfsql += slefTableDict[dict[file_extension]]
-    selfsql += " VALUE(\""
-    selfsql += f
-    selfsql += "\",\""
-    selfsql += mtime2_hr
-    selfsql += "\",\""
-    selfsql += convert_size(os.stat(somedir + f).st_size)
-    selfsql += "\",\""
-    selfsql += somedir
-    selfsql += "\");"
 
+    # print(summarysql)
     try:
         cursor.execute(summarysql)
-        cursor.execute(selfsql)
         db.commit()
     except:
         # 发生错误时回滚
         db.rollback()
+
+def classify(db):
+    db = pymysql.connect("localhost", "root", "root", "mydatabase")
+
+    cursor = db.cursor()
+
+
+
+    # Create Tables
+    for index in classList:
+        # create each table
+        create_table_sql = "CREATE TABLE "
+        create_table_sql += slefTableDict[index]
+        create_table_sql += "(id int NOT NULL AUTO_INCREMENT,summary_id INT UNSIGNED NOT NULL,PRIMARY KEY (id));"
+
+        try:
+            cursor.execute(create_table_sql)
+            db.commit()
+        except:
+            print("Exist")
+            db.rollback()
+
+    # Select & insert
+    for index in classList:
+        select_sql = "SELECT * FROM summary WHERE type=\""
+        select_sql += index
+        select_sql += "\";"
+
+        try:
+            cursor.execute(select_sql)
+            results = cursor.fetchall()
+            for row in results:
+                id = row[0]
+                sql = "INSERT INTO "
+
+                tp = slefTableDict[index]
+                sql += tp
+                sql += "(summary_id) VALUES("
+                sql += str(id)
+                sql += ");"
+
+                cursor.execute(sql)
+            db.commit()
+
+        except:
+            print("Fetch Error")
+            db.rollback()
+
+
 
 
 def main():
@@ -95,29 +133,21 @@ def main():
     cursor = db.cursor()
 
     # create summary table
-    create_summary_table_sql = "CREATE TABLE summary(name VARCHAR(50) NOT NULL,mtime VARCHAR(50) NOT NULL,size VARCHAR(50) NOT NULL,path VARCHAR(50) NOT NULL,type VARCHAR(50) DEFAULT \"Other\");"
-    create_picture_table_sql = "CREATE TABLE picture(name VARCHAR(50) NOT NULL,mtime VARCHAR(50) NOT NULL,size VARCHAR(50) NOT NULL,path VARCHAR(50) NOT NULL);"
-    create_music_table_sql = "CREATE TABLE music(name VARCHAR(50) NOT NULL,mtime VARCHAR(50) NOT NULL,size VARCHAR(50) NOT NULL,path VARCHAR(50) NOT NULL);"
-    create_video_table_sql = "CREATE TABLE video(name VARCHAR(50) NOT NULL,mtime VARCHAR(50) NOT NULL,size VARCHAR(50) NOT NULL,path VARCHAR(50) NOT NULL);"
-    create_document_table_sql = "CREATE TABLE document(name VARCHAR(50) NOT NULL,mtime VARCHAR(50) NOT NULL,size VARCHAR(50) NOT NULL,path VARCHAR(50) NOT NULL);"
-    create_other_table_sql = "CREATE TABLE other(name VARCHAR(50) NOT NULL,mtime VARCHAR(50) NOT NULL,size VARCHAR(50) NOT NULL,path VARCHAR(50) NOT NULL);"
+    create_summary_table_sql = "CREATE TABLE summary(id int NOT NULL AUTO_INCREMENT,type VARCHAR(50) DEFAULT \"Other\",name VARCHAR(50) NOT NULL,mtime VARCHAR(50) NOT NULL,size VARCHAR(50) NOT NULL,path VARCHAR(50) NOT NULL,PRIMARY KEY (id))"
 
     try:
         cursor.execute(create_summary_table_sql)
-        cursor.execute(create_picture_table_sql)
-        cursor.execute(create_music_table_sql)
-        cursor.execute(create_video_table_sql)
-        cursor.execute(create_document_table_sql)
-        cursor.execute(create_other_table_sql)
         db.commit()
     except:
-         print("Create part ERROR")
+         print("Exist")
 
 
-    # Insert files to summary & diff table
-    doInDir(direction,db)
+    # Insert files to summary
+    summary(direction,db)
+
+    # classify from summary
+    classify(db)
 
     db.close()
-
 
 main()
