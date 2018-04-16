@@ -4,6 +4,8 @@ import math
 import time
 
 
+#TODO : update when file change
+
 dict = {'mp3':'Music', 'aac':'Music', 'flac':'Music', 'ogg':'Music', 'wma':'Music', 'm4a':'Music', 'aiff':'Music', 'wav':'Music', 'amr':'Music',
         'flv':'Video','ogv':'Video', 'avi':'Video', 'mp4':'Video', 'mpg':'Video', 'mpeg':'Video', '3gp':'Video', 'mkv':'Video', 'ts':'Video', 'webm':'Video', 'vob':'Video', 'wmv':'Video',
         'png':'Picture', 'jpeg':'Picture', 'gif':'Picture', 'jpg':'Picture', 'bmp':'Picture', 'svg':'Picture', 'webp':'Picture', 'psd':'Picture', 'tiff':'Picture',
@@ -69,13 +71,11 @@ def insert_to_summary(somedir,f,db):
     summarysql += somedir
     summarysql += "\")"
 
-
-    # print(summarysql)
     try:
         cursor.execute(summarysql)
         db.commit()
     except:
-        # 发生错误时回滚
+        # if errot occure
         db.rollback()
 
 def classify(db):
