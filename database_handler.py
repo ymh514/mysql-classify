@@ -99,11 +99,13 @@ class SqlString:
         ## 5. type 1. name 2. mtime 3. size 4. path
         summary_sql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\""
 
-        if file_extension in self.type_dict:
-            summary_sql += self.type_dict[file_extension]
-        else:
-            summary_sql += "Other"
 
+        if file_extension in self.type_dict:
+            file_type = self.type_dict[file_extension]
+        else:
+            file_type = "Other"
+
+        summary_sql += file_type
         summary_sql += "\",\""
         summary_sql += file
         summary_sql += "\",STR_TO_DATE(\""
@@ -112,19 +114,15 @@ class SqlString:
         summary_sql += self.convert_size(os.stat(path + file).st_size)
         summary_sql += "\", \""
         summary_sql += path
-        summary_sql += "\")"
+        summary_sql += "\") "
 
-        return summary_sql
+        type_sql = "INSERT INTO "
+        type_sql += self.class_dict[file_type]
+        type_sql += "(summary_id) SELECT id FROM summary WHERE name=\""
+        type_sql += file
+        type_sql += "\";"
 
-    def getInsertTypeTableStr(self, type):  # 傳入大寫了
-
-        class_sql = "INSERT INTO "
-        class_sql += self.class_dict[type]
-        class_sql += "(summary_id) SELECT id FROM summary WHERE type = \""
-        class_sql += type
-        class_sql += "\";"
-        return class_sql
-
+        return summary_sql,type_sql
 
 class DatabaseHandler:
     class_dict = {
@@ -175,32 +173,23 @@ class DatabaseHandler:
             if os.path.isdir(fullpath):
                 self.searchPath(fullpath)
             elif os.path.isfile(fullpath):
-                self.insertFileToSummaryTable(path, file)
+                self.insertFileToTables(path, file)
 
-    def insertFileToSummaryTable(self, path, file):
+    def insertFileToTables(self, path, file):
 
-        insert_summary_sql_str = self._sql.getInsertSummaryTableStr(path, file)
+        insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertSummaryTableStr(path, file)
         try:
             self._cursor.execute(insert_summary_sql_str)
+            self._cursor.execute(insert_type_sql_str)
             self._database.commit()
+
         except:
             # if errot occure
             self._database.rollback()
 
-    def insertSummaryIdToTypeTable(self):
-        for index in self.class_dict:
-            insert_type_sql_str = self._sql.getInsertTypeTableStr(index)
-            try:
-                self._cursor.execute(insert_type_sql_str)
-                self._database.commit()
-            except:
-                # if errot occure
-                self._database.rollback()
-
     def checkPath(self, path):
         self.createTables()
         self.searchPath(path)
-        self.insertSummaryIdToTypeTable()
 
     def clearAll(self):
         try:

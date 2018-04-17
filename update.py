@@ -97,11 +97,13 @@ class SqlString:
         ## 5. type 1. name 2. mtime 3. size 4. path
         summary_sql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\""
 
-        if file_extension in self.type_dict:
-            summary_sql += self.type_dict[file_extension]
-        else:
-            summary_sql += "Other"
 
+        if file_extension in self.type_dict:
+            file_type = self.type_dict[file_extension]
+        else:
+            file_type = "Other"
+
+        summary_sql += file_type
         summary_sql += "\",\""
         summary_sql += file
         summary_sql += "\",STR_TO_DATE(\""
@@ -110,18 +112,15 @@ class SqlString:
         summary_sql += self.convert_size(os.stat(path + file).st_size)
         summary_sql += "\", \""
         summary_sql += path
-        summary_sql += "\")"
+        summary_sql += "\") "
 
-        return summary_sql
+        type_sql = "INSERT INTO "
+        type_sql += self.class_dict[file_type]
+        type_sql += "(summary_id) SELECT id FROM summary WHERE name=\""
+        type_sql += file
+        type_sql += "\";"
 
-    def getInsertTypeTableStr(self, type):  # 傳入大寫了
-
-        class_sql = "INSERT INTO "
-        class_sql += self.class_dict[type]
-        class_sql += "(summary_id) SELECT id FROM summary WHERE type = \""
-        class_sql += type
-        class_sql += "\";"
-        return class_sql
+        return summary_sql,type_sql
 
 
 _sql = SqlString()
@@ -130,9 +129,10 @@ def createUpdate(path,name):
     database = pymysql.connect("localhost", "root", "root", "mydatabase")
     cursor = database.cursor()
 
-    insert_summary_sql_str = _sql.getInsertSummaryTableStr(path, name)
+    insert_summary_sql_str,insert_type_sql_str = _sql.getInsertSummaryTableStr(path, name)
     try:
         cursor.execute(insert_summary_sql_str)
+        cursor.execute(insert_type_sql_str)
         database.commit()
     except:
         # if errot occure
