@@ -5,6 +5,7 @@ import math
 
 EXIST_DEBUG_FLAG = 1
 
+
 class SqlString:
     class_dict = {
         'Picture': 'picture',
@@ -64,7 +65,7 @@ class SqlString:
     def __init__(self):
         print()
 
-    def convert_size(self,size_bytes):
+    def convert_size(self, size_bytes):
         if size_bytes == 0:
             return "0B"
         size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
@@ -75,6 +76,7 @@ class SqlString:
 
     def getCreateSummaryTableStr(self):
         sql_str = "CREATE TABLE summary(id INT NOT NULL AUTO_INCREMENT,type VARCHAR(20) NOT NULL,name VARCHAR(100) NOT NULL,mtime DATETIME NOT NULL,size VARCHAR(20) NOT NULL,path VARCHAR(80) NOT NULL,PRIMARY KEY (id))"
+
         return sql_str
 
     def getCreateClassTableStr(self, class_name):
@@ -195,7 +197,6 @@ class DatabaseHandler:
                 # if errot occure
                 self._database.rollback()
 
-
     def checkPath(self, path):
         self.createTables()
         self.searchPath(path)
@@ -217,5 +218,6 @@ class DatabaseHandler:
 
 
 dd = DatabaseHandler()
-# dd.clearAll()
+dd.clearAll()
 dd.checkPath("/home/apteam/Desktop/MySQLTestFiles")
+print(" Done ! ")

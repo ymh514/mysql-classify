@@ -4,93 +4,139 @@ import os
 import pymysql,math,time
 from pyinotify import WatchManager, Notifier, ProcessEvent, IN_DELETE, IN_CREATE, IN_MODIFY
 
-dict = {'mp3':'Music', 'aac':'Music', 'flac':'Music', 'ogg':'Music', 'wma':'Music', 'm4a':'Music', 'aiff':'Music', 'wav':'Music', 'amr':'Music',
-        'flv':'Video','ogv':'Video', 'avi':'Video', 'mp4':'Video', 'mpg':'Video', 'mpeg':'Video', '3gp':'Video', 'mkv':'Video', 'ts':'Video', 'webm':'Video', 'vob':'Video', 'wmv':'Video',
-        'png':'Picture', 'jpeg':'Picture', 'gif':'Picture', 'jpg':'Picture', 'bmp':'Picture', 'svg':'Picture', 'webp':'Picture', 'psd':'Picture', 'tiff':'Picture',
-        'txt':'Document', 'pdf':'Document', 'doc':'Document', 'docx':'Document', 'odf':'Document', 'xls':'Document', 'xlsv':'Document', 'xlsx':'Document','ppt':'Document',
-        'pptx':'Document', 'ppsx':'Document', 'odp':'Document', 'odt':'Document', 'ods':'Document', 'md':'Document', 'json':'Document', 'csv':'Document'
-        };
+class SqlString:
+    class_dict = {
+        'Picture': 'picture',
+        'Video': 'video',
+        'Music': 'music',
+        'Document': 'document',
+        'Other': 'other'}
+    type_dict = {
+        'mp3': 'Music',
+        'aac': 'Music',
+        'flac': 'Music',
+        'ogg': 'Music',
+        'wma': 'Music',
+        'm4a': 'Music',
+        'aiff': 'Music',
+        'wav': 'Music',
+        'amr': 'Music',
+        'flv': 'Video',
+        'ogv': 'Video',
+        'avi': 'Video',
+        'mp4': 'Video',
+        'mpg': 'Video',
+        'mpeg': 'Video',
+        '3gp': 'Video',
+        'mkv': 'Video',
+        'ts': 'Video',
+        'webm': 'Video',
+        'vob': 'Video',
+        'wmv': 'Video',
+        'png': 'Picture',
+        'jpeg': 'Picture',
+        'gif': 'Picture',
+        'jpg': 'Picture',
+        'bmp': 'Picture',
+        'svg': 'Picture',
+        'webp': 'Picture',
+        'psd': 'Picture',
+        'tiff': 'Picture',
+        'txt': 'Document',
+        'pdf': 'Document',
+        'doc': 'Document',
+        'docx': 'Document',
+        'odf': 'Document',
+        'xls': 'Document',
+        'xlsv': 'Document',
+        'xlsx': 'Document',
+        'ppt': 'Document',
+        'pptx': 'Document',
+        'ppsx': 'Document',
+        'odp': 'Document',
+        'odt': 'Document',
+        'ods': 'Document',
+        'md': 'Document',
+        'json': 'Document',
+        'csv': 'Document'}
 
-classList = ['Picture','Video','Music','Document','Other']
-slefTableDict = {'Picture':'picture','Video':'video','Music':'music','Document':'document','Other':'other'};
+    def __init__(self):
+        print()
+
+    def convert_size(self, size_bytes):
+        if size_bytes == 0:
+            return "0B"
+        size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+        i = int(math.floor(math.log(size_bytes, 1024)))
+        p = math.pow(1024, i)
+        s = round(size_bytes / p, 2)
+        return "%s %s" % (s, size_name[i])
+
+    def getCreateSummaryTableStr(self):
+        sql_str = "CREATE TABLE summary(id INT NOT NULL AUTO_INCREMENT,type VARCHAR(20) NOT NULL,name VARCHAR(100) NOT NULL,mtime DATETIME NOT NULL,size VARCHAR(20) NOT NULL,path VARCHAR(80) NOT NULL,PRIMARY KEY (id))"
+
+        return sql_str
+
+    def getCreateClassTableStr(self, class_name):
+        sql_str = "CREATE TABLE "
+        sql_str += self.class_dict[class_name]
+        sql_str += "(id INT NOT NULL AUTO_INCREMENT,summary_id INT UNSIGNED NOT NULL,PRIMARY KEY (id));"
+        return sql_str
+
+    def getInsertSummaryTableStr(self, path, file):
+        path += "/"
+
+        filename, file_extension = os.path.splitext(file)
+
+        file_extension = file_extension.strip('.')
+
+        mtime = os.stat(path + file).st_mtime
+        mtime2 = time.localtime(mtime)
+        mtime2_hr = time.strftime("%m/%d/%Y %H:%M:%S", mtime2)
+
+        ## 5. type 1. name 2. mtime 3. size 4. path
+        summary_sql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\""
+
+        if file_extension in self.type_dict:
+            summary_sql += self.type_dict[file_extension]
+        else:
+            summary_sql += "Other"
+
+        summary_sql += "\",\""
+        summary_sql += file
+        summary_sql += "\",STR_TO_DATE(\""
+        summary_sql += mtime2_hr
+        summary_sql += "\",\"%m/%d/%Y %T\"),\""
+        summary_sql += self.convert_size(os.stat(path + file).st_size)
+        summary_sql += "\", \""
+        summary_sql += path
+        summary_sql += "\")"
+
+        return summary_sql
+
+    def getInsertTypeTableStr(self, type):  # 傳入大寫了
+
+        class_sql = "INSERT INTO "
+        class_sql += self.class_dict[type]
+        class_sql += "(summary_id) SELECT id FROM summary WHERE type = \""
+        class_sql += type
+        class_sql += "\";"
+        return class_sql
 
 
-def convert_size(size_bytes):
-   if size_bytes == 0:
-       return "0B"
-   size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-   i = int(math.floor(math.log(size_bytes, 1024)))
-   p = math.pow(1024, i)
-   s = round(size_bytes / p, 2)
-   return "%s %s" % (s, size_name[i])
-
+_sql = SqlString()
 
 def createUpdate(path,name):
-    path += "/"
-    db = pymysql.connect("localhost", "root", "root", "mydatabase")
-    cursor = db.cursor()
-    filename, file_extension = os.path.splitext(name)
+    database = pymysql.connect("localhost", "root", "root", "mydatabase")
+    cursor = database.cursor()
 
-    file_extension = file_extension.strip('.')
-
-    mtime = os.stat(path + name).st_mtime
-    mtime2 = time.localtime(mtime)
-    mtime2_hr = time.strftime("%m/%d/%Y %H:%M:%S", mtime2)
-
-    summarysql = ""
-    ## 5. type 1. name 2. mtime 3. size 4. path
-    if file_extension in dict:
-        summarysql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\""
-        type = dict[file_extension]
-        summarysql += type
-        summarysql += "\",\""
-
-    else:
-        summarysql = "INSERT INTO summary(name,mtime,size,path) VALUES(\""
-
-    summarysql += name
-    summarysql += "\",\""
-    summarysql += mtime2_hr
-    summarysql += "\",\""
-    summarysql += convert_size(os.stat(path + name).st_size)
-    summarysql += "\",\""
-    summarysql += path
-    summarysql += "\")"
+    insert_summary_sql_str = _sql.getInsertSummaryTableStr(path, name)
     try:
-        cursor.execute(summarysql)
-        db.commit()
+        cursor.execute(insert_summary_sql_str)
+        database.commit()
     except:
         # if errot occure
-        db.rollback()
-
-    select_sql = "SELECT * FROM summary WHERE name=\""
-    select_sql += name
-    select_sql += "\";"
-
-    print(select_sql)
-
-    try:
-        cursor.execute(select_sql)
-        results = cursor.fetchall()
-        for row in results:
-            id = row[0]
-
-            sql = "INSERT INTO "
-
-            tp = slefTableDict[dict[file_extension]]
-            sql += tp
-            sql += "(summary_id) VALUES("
-            sql += str(id)
-            sql += ");"
-            print(sql)
-
-            cursor.execute(sql)
-        db.commit()
-
-    except:
-        print("Fetch Error")
-        db.rollback()
-    db.close()
+        database.rollback()
 
 
 def deleteUpdate():
