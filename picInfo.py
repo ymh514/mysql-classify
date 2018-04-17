@@ -75,17 +75,17 @@ def get_lat_lon(exif_data):
 ################
 # Example ######
 ################
-from geopy.geocoders import Nominatim
+import googlemaps
+import json
 if __name__ == "__main__":
     image = Image.open("/home/apteam/Desktop/IMG_9154.JPG")  # load an image through PIL's Image object
     exif_data = get_exif_data(image)
-    lan,lon=get_lat_lon(exif_data)
-    print(get_lat_lon(exif_data))
 
-    aa = str(lan)
-    aa += ","
-    aa += str(lon)
+    lat,lon = get_lat_lon(exif_data)
+    ## google api
+    gmaps = googlemaps.Client(key='AIzaSyBNzdF5V16GPGlUdWr6nGbWgJwxUC5UxDg')
 
-    geolocator = Nominatim()
-    location = geolocator.reverse(aa)
-    print(location.address)
+    reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
+    jj = json.dumps(reverse_geocode_result)
+    data2 = json.loads(jj)
+    print(data2[4]['formatted_address'])
