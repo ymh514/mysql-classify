@@ -71,10 +71,21 @@ def get_lat_lon(exif_data):
     return lat, lon
 
 
+
 ################
 # Example ######
 ################
+from geopy.geocoders import Nominatim
 if __name__ == "__main__":
     image = Image.open("/home/apteam/Desktop/IMG_9154.JPG")  # load an image through PIL's Image object
     exif_data = get_exif_data(image)
-    print  (  get_lat_lon(exif_data))
+    lan,lon=get_lat_lon(exif_data)
+    print(get_lat_lon(exif_data))
+
+    aa = str(lan)
+    aa += ","
+    aa += str(lon)
+
+    geolocator = Nominatim()
+    location = geolocator.reverse(aa)
+    print(location.address)
