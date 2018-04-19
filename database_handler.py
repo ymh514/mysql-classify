@@ -5,6 +5,8 @@ import math
 
 EXIST_DEBUG_FLAG = 1
 
+# TODO : 0419 class type -> all dict
+# 0419 floder special case
 
 class SqlString:
     class_dict = {
@@ -65,7 +67,7 @@ class SqlString:
     def __init__(self):
         print()
 
-    def convert_size(self, size_bytes):
+    def _convert_size(self, size_bytes):
         if size_bytes == 0:
             return "0B"
         size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
@@ -79,13 +81,13 @@ class SqlString:
 
         return sql_str
 
-    def getCreateClassTableStr(self, class_name):
+    def getCreateTypeTableStr(self, class_name):
         sql_str = "CREATE TABLE "
         sql_str += self.class_dict[class_name]
         sql_str += "(id INT NOT NULL AUTO_INCREMENT,summary_id INT UNSIGNED NOT NULL,PRIMARY KEY (id));"
         return sql_str
 
-    def getInsertSummaryTableStr(self, path, file):
+    def getInsertTablesStr(self, path, file):
         path += "/"
 
         filename, file_extension = os.path.splitext(file)
@@ -111,7 +113,7 @@ class SqlString:
         summary_sql += "\",STR_TO_DATE(\""
         summary_sql += mtime2_hr
         summary_sql += "\",\"%m/%d/%Y %T\"),\""
-        summary_sql += self.convert_size(os.stat(path + file).st_size)
+        summary_sql += self._convert_size(os.stat(path + file).st_size)
         summary_sql += "\", \""
         summary_sql += path
         summary_sql += "\") "
@@ -123,6 +125,31 @@ class SqlString:
         type_sql += "\";"
 
         return summary_sql,type_sql
+
+    def getInsertFloderStr(self,path,floder):
+        path += "/"
+
+        mtime = os.stat(path + floder).st_mtime
+        mtime2 = time.localtime(mtime)
+        mtime2_hr = time.strftime("%m/%d/%Y %H:%M:%S", mtime2)
+
+        summary_sql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\"Floder\",\""
+        summary_sql += floder
+        summary_sql += "\",STR_TO_DATE(\""
+        summary_sql += mtime2_hr
+        summary_sql += "\",\"%m/%d/%Y %T\"),\""
+        summary_sql += self._convert_size(os.stat(path + floder).st_size)
+        summary_sql += "\", \""
+        summary_sql += path
+        summary_sql += "\") "
+
+        type_sql = "INSERT INTO floder"
+        type_sql += "(summary_id) SELECT id FROM summary WHERE name=\""
+        type_sql += floder
+        type_sql += "\";"
+
+        return summary_sql,type_sql
+
 
 class DatabaseHandler:
     class_dict = {
@@ -154,7 +181,7 @@ class DatabaseHandler:
         # Create Tables
         for index in self.class_dict:
             # create each table
-            class_sql_str = self._sql.getCreateClassTableStr(index)
+            class_sql_str = self._sql.getCreateTypeTableStr(index)
 
             try:
                 self._cursor.execute(class_sql_str)
@@ -166,18 +193,34 @@ class DatabaseHandler:
                         " Table Already Exist")
                 self._database.rollback()
 
+        # Create Floder Tables
+        floder_sql_str = "CREATE TABLE floder(id INT NOT NULL AUTO_INCREMENT,summary_id INT UNSIGNED NOT NULL,PRIMARY KEY (id));"
+        try:
+            self._cursor.execute(floder_sql_str)
+            self._database.commit()
+        except BaseException:
+            if (EXIST_DEBUG_FLAG == 1):
+                print("Floder Table Already Exist")
+            self._database.rollback()
+
     def searchPath(self, path):
         fileList = os.listdir(path)
         for file in fileList:
             fullpath = os.path.join(path, file)
             if os.path.isdir(fullpath):
+                floder = file
+                # call insert
+                self.insertFloderToTables(path,floder)
                 self.searchPath(fullpath)
             elif os.path.isfile(fullpath):
                 self.insertFileToTables(path, file)
 
-    def insertFileToTables(self, path, file):
+    def insertFloderToTables(self,path,floder):
+        insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertFloderStr(path, floder)
 
-        insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertSummaryTableStr(path, file)
+        print(insert_summary_sql_str)
+        print(insert_type_sql_str)
+
         try:
             self._cursor.execute(insert_summary_sql_str)
             self._cursor.execute(insert_type_sql_str)
@@ -186,6 +229,21 @@ class DatabaseHandler:
         except:
             # if errot occure
             self._database.rollback()
+
+        # self._database.close()
+
+    def insertFileToTables(self, path, file):
+
+        insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertTablesStr(path, file)
+        try:
+            self._cursor.execute(insert_summary_sql_str)
+            self._cursor.execute(insert_type_sql_str)
+            self._database.commit()
+
+        except:
+            # if errot occure
+            self._database.rollback()
+        # self._database.close()
 
     def checkPath(self, path):
         self.createTables()
@@ -199,6 +257,7 @@ class DatabaseHandler:
             self._cursor.execute("drop table picture;")
             self._cursor.execute("drop table video;")
             self._cursor.execute("drop table summary;")
+            self._cursor.execute("drop table floder;")
 
             self._database.commit()
         except:
