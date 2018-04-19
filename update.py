@@ -83,7 +83,7 @@ class SqlString:
         sql_str += "(id INT NOT NULL AUTO_INCREMENT,summary_id INT UNSIGNED NOT NULL,PRIMARY KEY (id));"
         return sql_str
 
-    def getInsertSummaryTableStr(self, path, file):
+    def getInsertToTablesStr(self, path, file):
         path += "/"
 
         filename, file_extension = os.path.splitext(file)
@@ -103,6 +103,9 @@ class SqlString:
         else:
             file_type = "Other"
 
+        type_table = self.class_dict[file_type]
+
+
         summary_sql += file_type
         summary_sql += "\",\""
         summary_sql += file
@@ -115,12 +118,38 @@ class SqlString:
         summary_sql += "\") "
 
         type_sql = "INSERT INTO "
-        type_sql += self.class_dict[file_type]
+        type_sql += type_table
         type_sql += "(summary_id) SELECT id FROM summary WHERE name=\""
         type_sql += file
         type_sql += "\";"
 
         return summary_sql,type_sql
+
+    def getDeleteFromTablesStr(self, path, file):
+        path += "/"
+        filename, file_extension = os.path.splitext(file)
+
+        file_extension = file_extension.strip('.')
+
+        if file_extension in self.type_dict:
+            file_type = self.type_dict[file_extension]
+        else:
+            file_type = "Other"
+
+        type_table = self.class_dict[file_type]
+
+        sql = "DELETE summary,"
+        sql += type_table
+        sql += " FROM summary INNER JOIN "
+        sql += type_table
+        sql += " ON "
+        sql += type_table
+        sql += ".summary_id = summary.id WHERE summary.name=\""
+        sql += file
+        sql += "\" AND summary.path=\""
+        sql += path
+        sql += "\";"
+        return sql
 
 
 _sql = SqlString()
@@ -129,7 +158,7 @@ def createUpdate(path,name):
     database = pymysql.connect("localhost", "root", "root", "mydatabase")
     cursor = database.cursor()
 
-    insert_summary_sql_str,insert_type_sql_str = _sql.getInsertSummaryTableStr(path, name)
+    insert_summary_sql_str,insert_type_sql_str = _sql.getInsertToTablesStr(path, name)
     try:
         cursor.execute(insert_summary_sql_str)
         cursor.execute(insert_type_sql_str)
@@ -138,9 +167,22 @@ def createUpdate(path,name):
         # if errot occure
         database.rollback()
 
+    database.close()
 
-def deleteUpdate():
-    print()
+def deleteUpdate(path,name):
+    database = pymysql.connect("localhost", "root", "root", "mydatabase")
+    cursor = database.cursor()
+
+    delete_sql_str = _sql.getDeleteFromTablesStr(path, name)
+    print(delete_sql_str)
+    try:
+        cursor.execute(delete_sql_str)
+        database.commit()
+    except:
+        # if errot occure
+        database.rollback()
+
+    database.close()
 
 def modifyUpdate():
     print()
@@ -157,6 +199,7 @@ class EventHandler(ProcessEvent):
     def process_IN_DELETE(self, event):
         if(event.name[0] != '.'):
             print("Deletefile: % s" % os.path.join(event.path, event.name))
+            deleteUpdate(event.path,event.name)
 
     def process_IN_MODIFY(self, event):
         if(event.name[0] != '.'):
