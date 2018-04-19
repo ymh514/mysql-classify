@@ -8,8 +8,8 @@ EXIST_DEBUG_FLAG = 1
 # TODO : 0419 class type -> all dict
 # 0419 floder special case
 
-class SqlString:
-    class_dict = {
+class Dictionary:
+    type_tablename_dict = {
         'Picture': 'picture',
         'Video': 'video',
         'Music': 'music',
@@ -64,8 +64,16 @@ class SqlString:
         'json': 'Document',
         'csv': 'Document'}
 
+    def getTableName(self,type):
+        return self.type_tablename_dict[type]
+
+    def getFileType(self,file_extension):
+        return self.type_dict[file_extension]
+
+class SqlString:
+
     def __init__(self):
-        print()
+        self._dict= Dictionary()
 
     def _convert_size(self, size_bytes):
         if size_bytes == 0:
@@ -83,7 +91,7 @@ class SqlString:
 
     def getCreateTypeTableStr(self, class_name):
         sql_str = "CREATE TABLE "
-        sql_str += self.class_dict[class_name]
+        sql_str += self._dict.getTableName(class_name)
         sql_str += "(id INT NOT NULL AUTO_INCREMENT,summary_id INT UNSIGNED NOT NULL,PRIMARY KEY (id));"
         return sql_str
 
