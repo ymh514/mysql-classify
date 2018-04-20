@@ -12,7 +12,7 @@ class Dictionary:
         'Music': 'music',
         'Document': 'document',
         'Other': 'other',
-        'Floder':'floder'}
+        'Folder':'folder'}
     type_dict = {
         'mp3': 'Music',
         'aac': 'Music',
@@ -141,36 +141,40 @@ class SqlString:
         type_sql += self._dict.getTableName(file_type)
         type_sql += "(summary_id) SELECT id FROM summary WHERE name=\""
         type_sql += file
+        type_sql += "\" AND path=\""
+        type_sql += path
         type_sql += "\";"
 
         return summary_sql,type_sql
 
-    def getInsertFloderStr(self,path,floder):
+    def getInsertFolderStr(self,path,folder):
         """ Return Instert tables SQL command
-            Floder need special treatment
+            folder need special treatment
             * Now Size is NULL
-            TODO : maybe can sum files under the floder to be this floder's size
+            TODO : maybe can sum files under the folder to be this folder's size
         """
 
         path += "/"
 
-        mtime = os.stat(path + floder).st_mtime
+        mtime = os.stat(path + folder).st_mtime
         mtime2 = time.localtime(mtime)
         mtime2_hr = time.strftime("%m/%d/%Y %H:%M:%S", mtime2)
 
-        summary_sql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\"Floder\",\""
-        summary_sql += floder
+        summary_sql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\"Folder\",\""
+        summary_sql += folder
         summary_sql += "\",STR_TO_DATE(\""
         summary_sql += mtime2_hr
         summary_sql += "\",\"%m/%d/%Y %T\"),\""
-        summary_sql += self._convert_size(os.stat(path + floder).st_size)
+        summary_sql += self._convert_size(os.stat(path + folder).st_size)
         summary_sql += "\", \""
         summary_sql += path
         summary_sql += "\") "
 
-        type_sql = "INSERT INTO floder"
+        type_sql = "INSERT INTO folder"
         type_sql += "(summary_id) SELECT id FROM summary WHERE name=\""
-        type_sql += floder
+        type_sql += folder
+        type_sql += "\" AND path=\""
+        type_sql += path
         type_sql += "\";"
 
         return summary_sql,type_sql
@@ -217,17 +221,17 @@ class DatabaseHandler:
         for file in fileList:
             fullpath = os.path.join(path, file)
             if os.path.isdir(fullpath):
-                floder = file
+                folder = file
                 # call insert
-                self.insertFloderToTables(path,floder)
+                self.insertFolderToTables(path,folder)
                 self.searchPath(fullpath)
             elif os.path.isfile(fullpath):
                 self.insertFileToTables(path, file)
 
-    def insertFloderToTables(self,path,floder):
-        """ Insert Floder to tables """
+    def insertFolderToTables(self,path,folder):
+        """ Insert folder to tables """
 
-        insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertFloderStr(path, floder)
+        insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertFolderStr(path, folder)
 
         self._sendSqlCmd(insert_summary_sql_str)
         self._sendSqlCmd(insert_type_sql_str)
@@ -255,7 +259,7 @@ class DatabaseHandler:
         self._sendSqlCmd("drop table video;")
         self._sendSqlCmd("drop table summary;")
         self._sendSqlCmd("drop table picture;")
-        self._sendSqlCmd("drop table floder;")
+        self._sendSqlCmd("drop table folder;")
 
 
 dd = DatabaseHandler()
