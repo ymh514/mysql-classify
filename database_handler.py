@@ -5,14 +5,14 @@ import math
 
 EXIST_DEBUG_FLAG = 1
 
-
-class SqlString:
-    class_dict = {
+class Dictionary:
+    type_tablename_dict = {
         'Picture': 'picture',
         'Video': 'video',
         'Music': 'music',
         'Document': 'document',
-        'Other': 'other'}
+        'Other': 'other',
+        'Folder':'folder'}
     type_dict = {
         'mp3': 'Music',
         'aac': 'Music',
@@ -62,10 +62,29 @@ class SqlString:
         'json': 'Document',
         'csv': 'Document'}
 
-    def __init__(self):
-        print()
+    def getTableName(self,type):
+        """ Return type's table name """
 
-    def convert_size(self, size_bytes):
+        return self.type_tablename_dict[type]
+
+    def getFileType(self,file_extension):
+        """ Return file extension's type """
+
+        if file_extension in self.type_dict:
+            return self.type_dict[file_extension]
+        else:
+            return 'Other'
+
+class SqlString:
+
+    def __init__(self):
+        """ Initial """
+
+        self._dict= Dictionary()
+
+    def _convert_size(self, size_bytes):
+        """ Convert Size to Bytes """
+
         if size_bytes == 0:
             return "0B"
         size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
@@ -75,17 +94,23 @@ class SqlString:
         return "%s %s" % (s, size_name[i])
 
     def getCreateSummaryTableStr(self):
+        """ Return create summary table SQL command """
+
         sql_str = "CREATE TABLE summary(id INT NOT NULL AUTO_INCREMENT,type VARCHAR(20) NOT NULL,name VARCHAR(100) NOT NULL,mtime DATETIME NOT NULL,size VARCHAR(20) NOT NULL,path VARCHAR(80) NOT NULL,PRIMARY KEY (id))"
 
         return sql_str
 
-    def getCreateClassTableStr(self, class_name):
+    def getCreateTypeTableStr(self, class_name):
+        """ Return create type table SQL command """
+
         sql_str = "CREATE TABLE "
-        sql_str += self.class_dict[class_name]
+        sql_str += self._dict.getTableName(class_name)
         sql_str += "(id INT NOT NULL AUTO_INCREMENT,summary_id INT UNSIGNED NOT NULL,PRIMARY KEY (id));"
         return sql_str
 
-    def getInsertSummaryTableStr(self, path, file):
+    def getInsertTablesStr(self, path, file):
+        """ Return Instert tables SQL command """
+
         path += "/"
 
         filename, file_extension = os.path.splitext(file)
@@ -99,11 +124,7 @@ class SqlString:
         ## 5. type 1. name 2. mtime 3. size 4. path
         summary_sql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\""
 
-
-        if file_extension in self.type_dict:
-            file_type = self.type_dict[file_extension]
-        else:
-            file_type = "Other"
+        file_type = self._dict.getFileType(file_extension)
 
         summary_sql += file_type
         summary_sql += "\",\""
@@ -111,99 +132,134 @@ class SqlString:
         summary_sql += "\",STR_TO_DATE(\""
         summary_sql += mtime2_hr
         summary_sql += "\",\"%m/%d/%Y %T\"),\""
-        summary_sql += self.convert_size(os.stat(path + file).st_size)
+        summary_sql += self._convert_size(os.stat(path + file).st_size)
         summary_sql += "\", \""
         summary_sql += path
         summary_sql += "\") "
 
         type_sql = "INSERT INTO "
-        type_sql += self.class_dict[file_type]
+        type_sql += self._dict.getTableName(file_type)
         type_sql += "(summary_id) SELECT id FROM summary WHERE name=\""
         type_sql += file
+        type_sql += "\" AND path=\""
+        type_sql += path
         type_sql += "\";"
 
         return summary_sql,type_sql
 
+    def getInsertFolderStr(self,path,folder):
+        """ Return Instert tables SQL command
+            folder need special treatment
+            * Now Size is NULL
+            TODO : maybe can sum files under the folder to be this folder's size
+        """
+
+        path += "/"
+
+        mtime = os.stat(path + folder).st_mtime
+        mtime2 = time.localtime(mtime)
+        mtime2_hr = time.strftime("%m/%d/%Y %H:%M:%S", mtime2)
+
+        summary_sql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\"Folder\",\""
+        summary_sql += folder
+        summary_sql += "\",STR_TO_DATE(\""
+        summary_sql += mtime2_hr
+        summary_sql += "\",\"%m/%d/%Y %T\"),\""
+        summary_sql += self._convert_size(os.stat(path + folder).st_size)
+        summary_sql += "\", \""
+        summary_sql += path
+        summary_sql += "\") "
+
+        type_sql = "INSERT INTO folder"
+        type_sql += "(summary_id) SELECT id FROM summary WHERE name=\""
+        type_sql += folder
+        type_sql += "\" AND path=\""
+        type_sql += path
+        type_sql += "\";"
+
+        return summary_sql,type_sql
+
+
 class DatabaseHandler:
-    class_dict = {
-        'Picture': 'picture',
-        'Video': 'video',
-        'Music': 'music',
-        'Document': 'document',
-        'Other': 'other'}
 
     def __init__(self):
+        """ Initial Class """
+
         self._database = pymysql.connect(
             "localhost", "root", "root", "mydatabase")
         self._cursor = self._database.cursor()
         self._sql = SqlString()
+        self._dict= Dictionary()
 
-    def createTables(self):
-
-        # summary table
-        sql_str = self._sql.getCreateSummaryTableStr()
-
+    def _sendSqlCmd(self,sql_str):
+        """ Used to Send SQL Command """
         try:
             self._cursor.execute(sql_str)
             self._database.commit()
         except BaseException:
-            if (EXIST_DEBUG_FLAG == 1):
-                print("Summary Table Already Exist")
+            # if (EXIST_DEBUG_FLAG == 1):
+            #     print("Summary Table Already Exist")
             self._database.rollback()
 
-        # Create Tables
-        for index in self.class_dict:
-            # create each table
-            class_sql_str = self._sql.getCreateClassTableStr(index)
+    def createTables(self):
+        """ Create summary table & type tables """
 
-            try:
-                self._cursor.execute(class_sql_str)
-                self._database.commit()
-            except BaseException:
-                if (EXIST_DEBUG_FLAG == 1):
-                    print(
-                        index +
-                        " Table Already Exist")
-                self._database.rollback()
+        # Create summary table
+        sql_str = self._sql.getCreateSummaryTableStr()
+        self._sendSqlCmd(sql_str)
+
+        # Create Tables
+        for index in self._dict.type_tablename_dict:
+            # create each table
+            class_sql_str = self._sql.getCreateTypeTableStr(index)
+            self._sendSqlCmd(class_sql_str)
 
     def searchPath(self, path):
+        """ Search path layer by layer to find files """
+
         fileList = os.listdir(path)
         for file in fileList:
             fullpath = os.path.join(path, file)
             if os.path.isdir(fullpath):
+                folder = file
+                # call insert
+                self.insertFolderToTables(path,folder)
                 self.searchPath(fullpath)
             elif os.path.isfile(fullpath):
                 self.insertFileToTables(path, file)
 
+    def insertFolderToTables(self,path,folder):
+        """ Insert folder to tables """
+
+        insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertFolderStr(path, folder)
+
+        self._sendSqlCmd(insert_summary_sql_str)
+        self._sendSqlCmd(insert_type_sql_str)
+
     def insertFileToTables(self, path, file):
+        """ Insert File to tables """
 
-        insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertSummaryTableStr(path, file)
-        try:
-            self._cursor.execute(insert_summary_sql_str)
-            self._cursor.execute(insert_type_sql_str)
-            self._database.commit()
+        insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertTablesStr(path, file)
 
-        except:
-            # if errot occure
-            self._database.rollback()
+        self._sendSqlCmd(insert_summary_sql_str)
+        self._sendSqlCmd(insert_type_sql_str)
 
     def checkPath(self, path):
+        """ Start """
+
         self.createTables()
         self.searchPath(path)
 
     def clearAll(self):
-        try:
-            self._cursor.execute("drop table document;")
-            self._cursor.execute("drop table music;")
-            self._cursor.execute("drop table other;")
-            self._cursor.execute("drop table picture;")
-            self._cursor.execute("drop table video;")
-            self._cursor.execute("drop table summary;")
+        """ Clear all tables """
 
-            self._database.commit()
-        except:
-            # if errot occure
-            self._database.rollback()
+        self._sendSqlCmd("drop table document;")
+        self._sendSqlCmd("drop table music;")
+        self._sendSqlCmd("drop table other;")
+        self._sendSqlCmd("drop table video;")
+        self._sendSqlCmd("drop table summary;")
+        self._sendSqlCmd("drop table picture;")
+        self._sendSqlCmd("drop table folder;")
 
 
 dd = DatabaseHandler()
