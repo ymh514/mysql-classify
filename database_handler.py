@@ -5,16 +5,14 @@ import math
 
 EXIST_DEBUG_FLAG = 1
 
-# TODO : 0419 class type -> all dict
-# 0419 floder special case
-
 class Dictionary:
     type_tablename_dict = {
         'Picture': 'picture',
         'Video': 'video',
         'Music': 'music',
         'Document': 'document',
-        'Other': 'other'}
+        'Other': 'other',
+        'Floder':'floder'}
     type_dict = {
         'mp3': 'Music',
         'aac': 'Music',
@@ -65,17 +63,28 @@ class Dictionary:
         'csv': 'Document'}
 
     def getTableName(self,type):
+        """ Return type's table name """
+
         return self.type_tablename_dict[type]
 
     def getFileType(self,file_extension):
-        return self.type_dict[file_extension]
+        """ Return file extension's type """
+
+        if file_extension in self.type_dict:
+            return self.type_dict[file_extension]
+        else:
+            return 'Other'
 
 class SqlString:
 
     def __init__(self):
+        """ Initial """
+
         self._dict= Dictionary()
 
     def _convert_size(self, size_bytes):
+        """ Convert Size to Bytes """
+
         if size_bytes == 0:
             return "0B"
         size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
@@ -85,17 +94,23 @@ class SqlString:
         return "%s %s" % (s, size_name[i])
 
     def getCreateSummaryTableStr(self):
+        """ Return create summary table SQL command """
+
         sql_str = "CREATE TABLE summary(id INT NOT NULL AUTO_INCREMENT,type VARCHAR(20) NOT NULL,name VARCHAR(100) NOT NULL,mtime DATETIME NOT NULL,size VARCHAR(20) NOT NULL,path VARCHAR(80) NOT NULL,PRIMARY KEY (id))"
 
         return sql_str
 
     def getCreateTypeTableStr(self, class_name):
+        """ Return create type table SQL command """
+
         sql_str = "CREATE TABLE "
         sql_str += self._dict.getTableName(class_name)
         sql_str += "(id INT NOT NULL AUTO_INCREMENT,summary_id INT UNSIGNED NOT NULL,PRIMARY KEY (id));"
         return sql_str
 
     def getInsertTablesStr(self, path, file):
+        """ Return Instert tables SQL command """
+
         path += "/"
 
         filename, file_extension = os.path.splitext(file)
@@ -109,11 +124,7 @@ class SqlString:
         ## 5. type 1. name 2. mtime 3. size 4. path
         summary_sql = "INSERT INTO summary(type,name,mtime,size,path) VALUES(\""
 
-
-        if file_extension in self.type_dict:
-            file_type = self.type_dict[file_extension]
-        else:
-            file_type = "Other"
+        file_type = self._dict.getFileType(file_extension)
 
         summary_sql += file_type
         summary_sql += "\",\""
@@ -127,7 +138,7 @@ class SqlString:
         summary_sql += "\") "
 
         type_sql = "INSERT INTO "
-        type_sql += self.class_dict[file_type]
+        type_sql += self._dict.getTableName(file_type)
         type_sql += "(summary_id) SELECT id FROM summary WHERE name=\""
         type_sql += file
         type_sql += "\";"
@@ -135,6 +146,12 @@ class SqlString:
         return summary_sql,type_sql
 
     def getInsertFloderStr(self,path,floder):
+        """ Return Instert tables SQL command
+            Floder need special treatment
+            * Now Size is NULL
+            TODO : maybe can sum files under the floder to be this floder's size
+        """
+
         path += "/"
 
         mtime = os.stat(path + floder).st_mtime
@@ -160,58 +177,42 @@ class SqlString:
 
 
 class DatabaseHandler:
-    class_dict = {
-        'Picture': 'picture',
-        'Video': 'video',
-        'Music': 'music',
-        'Document': 'document',
-        'Other': 'other'}
 
     def __init__(self):
+        """ Initial Class """
+
         self._database = pymysql.connect(
             "localhost", "root", "root", "mydatabase")
         self._cursor = self._database.cursor()
         self._sql = SqlString()
+        self._dict= Dictionary()
 
-    def createTables(self):
-
-        # summary table
-        sql_str = self._sql.getCreateSummaryTableStr()
-
+    def _sendSqlCmd(self,sql_str):
+        """ Used to Send SQL Command """
         try:
             self._cursor.execute(sql_str)
             self._database.commit()
         except BaseException:
-            if (EXIST_DEBUG_FLAG == 1):
-                print("Summary Table Already Exist")
+            # if (EXIST_DEBUG_FLAG == 1):
+            #     print("Summary Table Already Exist")
             self._database.rollback()
+
+    def createTables(self):
+        """ Create summary table & type tables """
+
+        # Create summary table
+        sql_str = self._sql.getCreateSummaryTableStr()
+        self._sendSqlCmd(sql_str)
 
         # Create Tables
-        for index in self.class_dict:
+        for index in self._dict.type_tablename_dict:
             # create each table
             class_sql_str = self._sql.getCreateTypeTableStr(index)
-
-            try:
-                self._cursor.execute(class_sql_str)
-                self._database.commit()
-            except BaseException:
-                if (EXIST_DEBUG_FLAG == 1):
-                    print(
-                        index +
-                        " Table Already Exist")
-                self._database.rollback()
-
-        # Create Floder Tables
-        floder_sql_str = "CREATE TABLE floder(id INT NOT NULL AUTO_INCREMENT,summary_id INT UNSIGNED NOT NULL,PRIMARY KEY (id));"
-        try:
-            self._cursor.execute(floder_sql_str)
-            self._database.commit()
-        except BaseException:
-            if (EXIST_DEBUG_FLAG == 1):
-                print("Floder Table Already Exist")
-            self._database.rollback()
+            self._sendSqlCmd(class_sql_str)
 
     def searchPath(self, path):
+        """ Search path layer by layer to find files """
+
         fileList = os.listdir(path)
         for file in fileList:
             fullpath = os.path.join(path, file)
@@ -224,53 +225,37 @@ class DatabaseHandler:
                 self.insertFileToTables(path, file)
 
     def insertFloderToTables(self,path,floder):
+        """ Insert Floder to tables """
+
         insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertFloderStr(path, floder)
 
-        print(insert_summary_sql_str)
-        print(insert_type_sql_str)
-
-        try:
-            self._cursor.execute(insert_summary_sql_str)
-            self._cursor.execute(insert_type_sql_str)
-            self._database.commit()
-
-        except:
-            # if errot occure
-            self._database.rollback()
-
-        # self._database.close()
+        self._sendSqlCmd(insert_summary_sql_str)
+        self._sendSqlCmd(insert_type_sql_str)
 
     def insertFileToTables(self, path, file):
+        """ Insert File to tables """
 
         insert_summary_sql_str,insert_type_sql_str = self._sql.getInsertTablesStr(path, file)
-        try:
-            self._cursor.execute(insert_summary_sql_str)
-            self._cursor.execute(insert_type_sql_str)
-            self._database.commit()
 
-        except:
-            # if errot occure
-            self._database.rollback()
-        # self._database.close()
+        self._sendSqlCmd(insert_summary_sql_str)
+        self._sendSqlCmd(insert_type_sql_str)
 
     def checkPath(self, path):
+        """ Start """
+
         self.createTables()
         self.searchPath(path)
 
     def clearAll(self):
-        try:
-            self._cursor.execute("drop table document;")
-            self._cursor.execute("drop table music;")
-            self._cursor.execute("drop table other;")
-            self._cursor.execute("drop table picture;")
-            self._cursor.execute("drop table video;")
-            self._cursor.execute("drop table summary;")
-            self._cursor.execute("drop table floder;")
+        """ Clear all tables """
 
-            self._database.commit()
-        except:
-            # if errot occure
-            self._database.rollback()
+        self._sendSqlCmd("drop table document;")
+        self._sendSqlCmd("drop table music;")
+        self._sendSqlCmd("drop table other;")
+        self._sendSqlCmd("drop table video;")
+        self._sendSqlCmd("drop table summary;")
+        self._sendSqlCmd("drop table picture;")
+        self._sendSqlCmd("drop table floder;")
 
 
 dd = DatabaseHandler()
