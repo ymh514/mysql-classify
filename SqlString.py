@@ -3,32 +3,33 @@ import Dictionary
 import math
 import os
 
+
 class TypeStruct:
-    def typeCreateStruct(self,type):
+    def typeCreateStruct(self, type):
         return {
-            'Picture': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,latitude FLOAT(6) DEFAULT NULL,longitude FLOAT(6) DEFAULT NULL,PRIMARY KEY (id));',
-            'Video': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
-            'Music': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
-            'Document': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
-            'Other': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
-            'Folder':'(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));'
+            'image': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,latitude FLOAT(6) DEFAULT NULL,longitude FLOAT(6) DEFAULT NULL,PRIMARY KEY (id));',
+            'video': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
+            'music': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
+            'file': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
+            'folder': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));'
         }.get(type)
-    def typeInsertStruct(self,type):
+
+    def typeInsertStruct(self, type):
         return {
-            'Picture': 'picture',
-            'Video': 'video',
-            'Music': 'music',
-            'Document': 'document',
-            'Other': 'other',
-            'Folder':'folder'
+            'image': 'image',
+            'video': 'video',
+            'music': 'music',
+            'file': 'file',
+            'folder': 'folder'
         }.get(type)
+
 
 class SqlString:
 
     def __init__(self):
         """ Initial """
 
-        self._dict= Dictionary.Dictionary()
+        self._dict = Dictionary.Dictionary()
         self._typeStruct = TypeStruct()
 
     def _convert_size(self, size_bytes):
@@ -94,9 +95,9 @@ class SqlString:
         type_sql += path
         type_sql += "\";"
 
-        return summary_sql,type_sql
+        return summary_sql, type_sql
 
-    def getInsertFolderStr(self,path,folder):
+    def getInsertFolderStr(self, path, folder):
         """ Return Instert tables SQL command
             folder need special treatment
             * Now Size is NULL
@@ -107,7 +108,7 @@ class SqlString:
         mtime2 = time.localtime(mtime)
         mtime2_hr = time.strftime("%m/%d/%Y %H:%M:%S", mtime2)
 
-        summary_sql = "INSERT INTO summary(type,name,path,mtime,size) VALUES(\"Folder\",\""
+        summary_sql = "INSERT INTO summary(type,name,path,mtime,size) VALUES(\"folder\",\""
         summary_sql += folder
         summary_sql += "\", \""
         summary_sql += path
@@ -124,10 +125,43 @@ class SqlString:
         type_sql += path
         type_sql += "\";"
 
-        return summary_sql,type_sql
+        return summary_sql, type_sql
+
+    def getDeleteTablesStr(self, path, file):
+        filename, file_extension = os.path.splitext(file)
+
+        file_extension = file_extension.strip('.')
+
+        file_type = self._dict.getFileType(file_extension)
+
+        if file_extension=="":
+            type_table = "folder"
+        else:
+            type_table = self._dict.getTableName(file_type)
+
+        sql = "DELETE summary,"
+        sql += type_table
+        sql += " FROM summary INNER JOIN "
+        sql += type_table
+        sql += " ON "
+        sql += type_table
+        sql += ".summary_id = summary.id WHERE summary.name=\""
+        sql += file
+        sql += "\" AND summary.path=\""
+        sql += path
+        sql += "\";"
+        return sql
 
     def getSummaryTableStr(self):
         return "SELECT * FROM summary"
 
-    def getTypeTableStr(self,type):
-        return ""
+    def getTypeTableStr(self, type):
+        sql = "SELECT * FROM summary INNER JOIN "+type
+        sql += " ON summary.id="
+        sql += type
+        sql += ".summary_id;"
+        return sql
+    def getPathFilesStr(self,path):
+        sql = "SELECT * FROM summary WHERE path=\""+path
+        sql += "\""
+        return sql

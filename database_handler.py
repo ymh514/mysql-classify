@@ -6,14 +6,13 @@ import json
 
 EXIST_DEBUG_FLAG = 1
 
-
 class DatabaseHandler:
 
     def __init__(self):
         """ Initial Class """
 
         self._database = pymysql.connect(
-            "localhost", "root", "root", "mydatabase")
+            "localhost", "root", "12345678", "mydatabase")
         self._cursor = self._database.cursor()
 
         self._sql = SqlString.SqlString()
@@ -81,12 +80,12 @@ class DatabaseHandler:
     def clearAll(self):
         """ Clear all tables """
 
-        self._sendSqlCmd("drop table document;")
+
         self._sendSqlCmd("drop table music;")
-        self._sendSqlCmd("drop table other;")
+        self._sendSqlCmd("drop table file;")
         self._sendSqlCmd("drop table video;")
         self._sendSqlCmd("drop table summary;")
-        self._sendSqlCmd("drop table picture;")
+        self._sendSqlCmd("drop table image;")
         self._sendSqlCmd("drop table folder;")
 
     def getSummaryTable(self):
@@ -107,10 +106,54 @@ class DatabaseHandler:
             return_dict.append(tempdict)
 
         self._database.commit()
+
         return json.dumps(return_dict)
 
+    def getTypeTable(self,type):
+
+        get_type_sql_str = self._sql.getTypeTableStr(type)
+
+        self._cursor.execute(get_type_sql_str)
+
+        return_dict = []
+        result = self._cursor.fetchall()
+        for row in result:
+            tempdict = {}
+            # print("1 : %s  2 : %s  3 : %s" % (row[1],row[2],row[3]))
+            tempdict['type'] = row[1]
+            tempdict['name'] = row[2]
+            tempdict['path'] = row[3]
+
+            return_dict.append(tempdict)
+
+        self._database.commit()
+
+        return json.dumps(return_dict)
+
+    def getPathFiles(self,path):
+        get_path_files_sql_str = self._sql.getPathFilesStr(path)
+        self._cursor.execute(get_path_files_sql_str)
+
+        return_dict = []
+        result = self._cursor.fetchall()
+        for row in result:
+            tempdict = {}
+            # print("1 : %s  2 : %s  3 : %s" % (row[1],row[2],row[3]))
+            tempdict['type'] = row[1]
+            tempdict['name'] = row[2]
+            tempdict['path'] = row[3]
+
+            return_dict.append(tempdict)
+
+        self._database.commit()
+
+        return json.dumps(return_dict)
+
+
 dd = DatabaseHandler()
-dd.clearAll()
-dd.checkPath("/home/apteam/Desktop/MySQLTestFiles")
-# print(dd.getSummaryTable())
-print(" Done ! ")
+# dd.getPathFiles("/Volumes/YMH/MySQLTestFiles/audio")
+# dd.clearAll()
+# dd.checkPath("/Volumes/YMH/MySQLTestFiles")
+# dd.getSummaryTable()
+print(dd.getTypeTable("image"))
+    # print(" Done ! ")
