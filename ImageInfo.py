@@ -71,8 +71,9 @@ class ImageInfo:
         return lat, lon
 
     def get_date_taken(self,image):
-
+        """ Return taken time with millisecond """
         if image._getexif():
+            # 36867 = 0x9003 = DateTimeOriginal
             dt_obj = datetime.strptime(image._getexif()[36867],'%Y:%m:%d %H:%M:%S')
             return dt_obj.timestamp()
         else:
