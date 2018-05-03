@@ -71,6 +71,9 @@ class DatabaseHandler:
         self._sendSqlCmd(insert_summary_sql_str)
         self._sendSqlCmd(insert_type_sql_str)
 
+        """ update information """
+        update_info_sql_str = self._sql
+
     def checkPath(self, path):
         """ Start """
 
@@ -152,8 +155,8 @@ class DatabaseHandler:
 
 dd = DatabaseHandler()
 # dd.getPathFiles("/Volumes/YMH/MySQLTestFiles/audio")
-# dd.clearAll()
-# dd.checkPath("/Volumes/YMH/MySQLTestFiles")
+dd.clearAll()
+dd.checkPath("/Users/Terry/Desktop/MySQLFIles")
 # dd.getSummaryTable()
-print(dd.getTypeTable("image"))
-    # print(" Done ! ")
+# print(dd.getTypeTable("image"))
+print(" Done ! ")
