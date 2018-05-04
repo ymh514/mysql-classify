@@ -4,7 +4,7 @@ class Dictionary:
         'video': 'video',
         'music': 'music',
         'file': 'file',
-        'folder':'folder'}
+        'folder': 'folder'}
     type_dict = {
         'mp3': 'music',
         'aac': 'music',
@@ -101,10 +101,12 @@ class Dictionary:
         'JSON': 'file',
         'CSV': 'file'}
 
-    def getFileType(self,file_extension):
+    def get_file_type(self, file_extension):
         """ Return file extension's type """
-
+        return_str = ""
         if file_extension in self.type_dict:
-            return self.type_dict[file_extension]
+            return_str = self.type_dict[file_extension]
         else:
-            return 'file'
+            return_str = 'file'
+
+        return return_str

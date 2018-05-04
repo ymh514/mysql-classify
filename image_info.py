@@ -2,11 +2,12 @@ from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 from datetime import datetime
 
+
 class ImageInfo:
     def __init__(self):
         """ Initial """
 
-    def get_exif_data(self,image):
+    def get_exif_data(self, image):
         """Returns a dictionary from the exif data of an PIL Image item. Also converts the GPS Tags"""
         exif_data = {}
         info = image._getexif()
@@ -24,13 +25,14 @@ class ImageInfo:
                     exif_data[decoded] = value
 
         return exif_data
-    def _get_if_exist(self,data, key):
+
+    def _get_if_exist(self, data, key):
         if key in data:
             return data[key]
 
         return None
 
-    def _convert_to_degress(self,value):
+    def _convert_to_degress(self, value):
         """Helper function to convert the GPS coordinates stored in the EXIF to degress in float format"""
         d0 = value[0][0]
         d1 = value[0][1]
@@ -46,8 +48,9 @@ class ImageInfo:
 
         return d + (m / 60.0) + (s / 3600.0)
 
-    def get_lat_lon(self,exif_data):
-        """Returns the latitude and longitude, if available, from the provided exif_data (obtained through get_exif_data above)"""
+    def get_lat_lon(self, exif_data):
+        """Returns the latitude and longitude, if available, from the provided exif_data
+        (obtained through get_exif_data above)"""
         lat = None
         lon = None
 
@@ -70,11 +73,11 @@ class ImageInfo:
 
         return lat, lon
 
-    def get_date_taken(self,image):
+    def get_date_taken(self, image):
         """ Return taken time with millisecond """
         if image._getexif():
             # 36867 = 0x9003 = DateTimeOriginal
-            dt_obj = datetime.strptime(image._getexif()[36867],'%Y:%m:%d %H:%M:%S')
+            dt_obj = datetime.strptime(image._getexif()[36867], '%Y:%m:%d %H:%M:%S')
             return dt_obj.timestamp()
         else:
             return None
@@ -85,20 +88,22 @@ class ImageInfo:
 ################
 # import googlemaps
 import json
-if __name__ == "__main__":
+# if __name__ == "__main__":
+#
+#     imageinfo = ImageInfo()
+#
+#     image = Image.open("/Users/Terry/Desktop/MySQLFIles/ncs.jpg")  # load an image through PIL's Image object
+#     exif_data = imageinfo.get_exif_data(image)
+#
+#     lat,lon = imageinfo.get_lat_lon(exif_data)
+#
+#     print(lat,lon)
 
-    imageinfo = ImageInfo()
 
-    image = Image.open("/Users/Terry/Desktop/MySQLFIles/ncs.jpg")  # load an image through PIL's Image object
-    exif_data = imageinfo.get_exif_data(image)
-
-    lat,lon = imageinfo.get_lat_lon(exif_data)
-
-    print(lat,lon)
-    # ## google api
-    # gmaps = googlemaps.Client(key='AIzaSyBNzdF5V16GPGlUdWr6nGbWgJwxUC5UxDg')
-    #
-    # reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
-    # jj = json.dumps(reverse_geocode_result)
-    # data2 = json.loads(jj)
-    # print(data2[4]['formatted_address'])
+# ## google api
+# gmaps = googlemaps.Client(key='AIzaSyBNzdF5V16GPGlUdWr6nGbWgJwxUC5UxDg')
+#
+# reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
+# jj = json.dumps(reverse_geocode_result)
+# data2 = json.loads(jj)
+# print(data2[4]['formatted_address'])

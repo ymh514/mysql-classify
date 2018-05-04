@@ -1,38 +1,37 @@
-import time
-import Dictionary
 import math
 import os
-import ImageInfo
 from PIL import Image
 
+import image_info
+import dictionary
 
 class TypeStruct:
-    def typeCreateStruct(self, type):
+    def type_create_struct(self, file_type):
         return {
-            'image': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,latitude FLOAT(6) DEFAULT NULL,longitude FLOAT(6) DEFAULT NULL,taken_time INT DEFAULT NULL,PRIMARY KEY (id));',
+            'image': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,latitude FLOAT(6) DEFAULT NULL,'
+                     'longitude FLOAT(6) DEFAULT NULL,taken_time INT DEFAULT NULL,PRIMARY KEY (id));',
             'video': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'music': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'file': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'folder': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));'
-        }.get(type)
+        }.get(file_type)
 
-    def typeInsertStruct(self, type):
+    def type_insert_struct(self, file_type):
         return {
             'image': '(summary_id,latitude,longitude,taken_time)',
             'video': '(summary_id)',
             'music': '(summary_id)',
             'file': '(summary_id)',
             'folder': '(summary_id)'
-        }.get(type)
-        # UPDATE image JOIN summary  ON (summary.id=image.summary_id) SET image.latitude = 213.123123 , image.longitude=555.1 WHERE summary.name="tmp.py"
-        # insert into image (summary_id,latitude,longitude) select id,20.11,555 From summary where summary.name="tmp.py"
-class SqlString:
+        }.get(file_type)
 
+
+class SqlString:
     def __init__(self):
         """ Initial """
 
-        self._dict = Dictionary.Dictionary()
-        self._imageInfo = ImageInfo.ImageInfo()
+        self._dict = dictionary.Dictionary()
+        self._imageInfo = image_info.ImageInfo()
         self._typeStruct = TypeStruct()
 
     def _convert_size(self, size_bytes):
@@ -46,22 +45,22 @@ class SqlString:
         s = round(size_bytes / p, 2)
         return "%s %s" % (s, size_name[i])
 
-    def getCreateSummaryTableStr(self):
+    def get_create_summary_table_str(self):
         """ Return create summary table SQL command """
 
         sql_str = "CREATE TABLE summary(id INT NOT NULL AUTO_INCREMENT,type VARCHAR(20) NOT NULL,name VARCHAR(100) NOT NULL,path VARCHAR(200) NOT NULL,c_time INT NOT NULL,m_time INT NOT NULL,a_time INT NOT NULL,size VARCHAR(20) NOT NULL,PRIMARY KEY (id))"
 
         return sql_str
 
-    def getCreateTypeTableStr(self, type_name):
+    def get_create_type_table_str(self, file_type):
         """ Return create type table SQL command """
 
         sql_str = "CREATE TABLE "
-        sql_str += type_name
-        sql_str += self._typeStruct.typeCreateStruct(type_name)
+        sql_str += file_type
+        sql_str += self._typeStruct.type_create_struct(file_type)
         return sql_str
 
-    def getInsertTablesStr(self, path, file):
+    def get_insert_tables_str(self, path, file):
         """ Return Instert tables SQL command """
 
         filename, file_extension = os.path.splitext(file)
@@ -72,10 +71,10 @@ class SqlString:
         m_time = os.stat(path + "/" + file).st_mtime
         a_time = os.stat(path + "/" + file).st_atime
 
-        ## 5. type 1. name 2. mtime 3. size 4. path
+        # 5. type 1. name 2. m_time 3. size 4. path
         summary_sql = "INSERT INTO summary(type,name,path,c_time,m_time,a_time,size) VALUES(\""
 
-        file_type = self._dict.getFileType(file_extension)
+        file_type = self._dict.get_file_type(file_extension)
 
         summary_sql += file_type
         summary_sql += "\",\""
@@ -95,21 +94,21 @@ class SqlString:
         # Find by name & path double check
         type_sql = "INSERT INTO "
         type_sql += file_type
-        type_sql += self._typeStruct.typeInsertStruct(file_type)
+        type_sql += self._typeStruct.type_insert_struct(file_type)
         type_sql += " SELECT id "
 
-        if(file_type=='image'):
-            image = Image.open(path +"/"+file)  # load an image through PIL's Image object
+        if file_type == 'image':
+            image = Image.open(path + "/" + file)  # load an image through PIL's Image object
             exif_data = self._imageInfo.get_exif_data(image)
 
             lat, lon = self._imageInfo.get_lat_lon(exif_data)
             time = self._imageInfo.get_date_taken(image)
 
-            if(time == None):
+            if time is None:
                 time = 'NULL'
-            if(lat == None):
+            if lat is None:
                 lat = 'NULL'
-            if(lon == None):
+            if lon is None:
                 lon = 'NULL'
 
             type_sql += ","
@@ -127,7 +126,7 @@ class SqlString:
 
         return summary_sql, type_sql
 
-    def getInsertFolderStr(self, path, folder):
+    def get_insert_folder_str(self, path, folder):
         """ Return Instert tables SQL command
             folder need special treatment
             * Now Size is NULL
@@ -161,15 +160,14 @@ class SqlString:
 
         return folder_sql, type_sql
 
-
-    def getDeleteTablesStr(self, path, file):
+    def get_delete_tables_str(self, path, file):
         filename, file_extension = os.path.splitext(file)
 
         file_extension = file_extension.strip('.')
 
-        file_type = self._dict.getFileType(file_extension)
+        file_type = self._dict.get_file_type(file_extension)
 
-        if file_extension=="":
+        if file_extension == "":
             type_table = "folder"
         else:
             type_table = file_type
@@ -187,16 +185,23 @@ class SqlString:
         sql += "\";"
         return sql
 
-    def getSummaryTableStr(self):
+    def get_summary_table_str(self):
         return "SELECT * FROM summary"
 
-    def getTypeTableStr(self, type):
-        sql = "SELECT * FROM summary INNER JOIN "+type
+    def get_summary_table_by_type_str(self, file_type):
+        # TODO : rename
+        sql = "SELECT * FROM summary INNER JOIN " + file_type
         sql += " ON summary.id="
-        sql += type
+        sql += file_type
         sql += ".summary_id;"
         return sql
-    def getPathFilesStr(self,path):
-        sql = "SELECT * FROM summary WHERE path=\""+path
+
+    def get_path_files_str(self, path):
+        sql = "SELECT * FROM summary WHERE path=\"" + path
         sql += "\""
+        return sql
+
+    def get_type_str(self, file_type):
+        sql = "SELECT * FROM "
+        sql += file_type
         return sql
