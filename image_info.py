@@ -1,7 +1,7 @@
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 from datetime import datetime
-
+import os
 
 class ImageInfo:
     def __init__(self):
@@ -81,6 +81,7 @@ class ImageInfo:
             return dt_obj.timestamp()
         else:
             return None
+
 
 
 ################
