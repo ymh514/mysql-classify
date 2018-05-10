@@ -12,13 +12,11 @@ EXIST_DEBUG_FLAG = 1
 class DatabaseHandler:
     """ Database handler only new once """
 
-    # TODO : create a table save users in database
-
     def __init__(self):
         """ Initial Class """
 
         self._database = pymysql.connect(
-            "localhost", "root", "12345678", "mydatabase")
+            "localhost", "root", "12345678", "mydatabase", charset="utf8")
         self._cursor = self._database.cursor()
 
         self._sql = sql_string.SqlString()
@@ -72,6 +70,41 @@ class DatabaseHandler:
         self._send_sql_cmd(insert_summary_sql_str)
         self._send_sql_cmd(insert_type_sql_str)
 
+    def _set_thumbnail(self, path, file, user_name):
+        """ Generate thumbnail """
+        #  Generate thumbnail for image
+        get_summary_id_sql = "SELECT id,type FROM summary WHERE name="
+        get_summary_id_sql += file
+        get_summary_id_sql += " AND path="
+        get_summary_id_sql += path
+        self._send_sql_cmd(get_summary_id_sql)
+
+        summary_id = None
+        file_type = ""
+        result = self._cursor.fetchall()
+        for row in result:
+            # row[1] = user
+            summary_id = row[0][0]
+            file_type = row[0][1]
+
+        self._database.commit()
+
+        if file_type == 'image':
+            full_path = os.path.join(path, file)
+            img = Image.open(full_path)
+            img.thumbnail((36, 36))
+            save_str = "/Users/Terry/mysql_resize/"
+            save_str += user_name
+
+            # check dir
+            if not os.path.isdir(save_str):
+                os.mkdir(save_str)
+
+            save_str += "/"
+            save_str += str(summary_id)
+            save_str += ".jpg"
+            img.save(save_str)
+
     def _insert_file_to_tables(self, path, file, user_name):
         """ Insert File to tables """
         insert_summary_sql_str, insert_type_sql_str = \
@@ -79,21 +112,33 @@ class DatabaseHandler:
 
         self._send_sql_cmd(insert_summary_sql_str)
         self._send_sql_cmd(insert_type_sql_str)
+        self._set_thumbnail(path, file, user_name)
 
-    def _check_path(self, path, user_name):
+    def _check_path(self, path_or_file, user_name):
         """ When initial search path layer by layer to find files & add """
-        file_list = os.listdir(path)
-        for file in file_list:
-            full_path = os.path.join(path, file)
-            if os.path.isdir(full_path):
-                folder = file
-                # call insert
-                self._insert_folder_to_tables(path, folder, user_name)
-                self._check_path(full_path, user_name)
-            elif os.path.isfile(full_path):
+        if os.path.isdir(path_or_file):
+            # input is a path
+            path = path_or_file
+            file_list = os.listdir(path)
+            for file in file_list:
+                full_path = os.path.join(path, file)
+                if os.path.isdir(full_path):
+                    folder = file
+                    # call insert
+                    self._insert_folder_to_tables(path, folder, user_name)
+                    self._check_path(full_path, user_name)
+                elif os.path.isfile(full_path):
+                    if not file.startswith('.'):
+                        # '.' start file don't do
+                        self._insert_file_to_tables(path, file, user_name)
+        else:
+            # input is a file
+            path, file = os.path.split(path_or_file)
+            if not file.startswith('.'):
+                # '.' start file don't do
                 self._insert_file_to_tables(path, file, user_name)
 
-    def _get_json_payload(self, data, status=0, message="sucess"):
+    def _get_json_payload(self, data, status=0, message='sucess'):
         """ Form defined format json payload """
         root = {}
         root['status'] = status
@@ -107,7 +152,7 @@ class DatabaseHandler:
         self._check_path(path, user_name)
 
     def update_database_handler(self, path, user_name):
-        """ Update or create table when file been new """
+        """ Update new path or file """
         sql_str = self._sql.get_select_user_table_str()
         self._send_sql_cmd(sql_str)
 
@@ -129,7 +174,7 @@ class DatabaseHandler:
     def clear_all(self):
         """ Clear all tables """
         sql_str = "SELECT * FROM users;"
-        self._cursor.execute(sql_str)
+        self._send_sql_cmd(sql_str)
 
         user_dict = []
         result = self._cursor.fetchall()
@@ -153,7 +198,7 @@ class DatabaseHandler:
     def get_user_type_table(self, user_name, file_type):
         """ Return user's (type) table with id """
         sql_str = self._sql.get_user_file_type_str(user_name, file_type)
-        self._cursor.execute(sql_str)
+        self._send_sql_cmd(sql_str)
 
         data_list = []
         result = self._cursor.fetchall()
@@ -174,7 +219,7 @@ class DatabaseHandler:
     def get_file_path_with_id(self, file_id):
         """ Return file's path with file id (summary table) """
         sql_str = self._sql.get_file_path_with_id_str(file_id)
-        self._cursor.execute(sql_str)
+        self._send_sql_cmd(sql_str)
 
         result = self._cursor.fetchall()
 
@@ -191,13 +236,17 @@ class DatabaseHandler:
 if __name__ == "__main__":
     dd = DatabaseHandler()
 
-    dd.clear_all()
+    # dd.clear_all()
 
-    # 第一次進來
-    dd.initial_database_handler("/Users/Terry/Desktop/MySQLFIles", "terry")
-    # 要加入的新路徑
-    dd.update_database_handler("/Users/Terry/Desktop/MySQLFiles2", "terry")
+    # #第一次進來
+    # dd.initial_database_handler("/Users/Terry/Desktop/terry_dir", "terry")
 
-    print(dd.get_user_type_table('terry', 'file'))
+    # #要更新家務的新路徑或檔案 # input folder id, file_name
+    dd.update_database_handler("/Users/Terry/Desktop/testdog.jpg", "jack")
+
+    # #取得某個user的type table json
+    # print(dd.get_user_type_table('jack', 'file'))
+
+
 
     print(" Done ! ")
