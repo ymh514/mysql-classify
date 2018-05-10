@@ -10,6 +10,9 @@ EXIST_DEBUG_FLAG = 1
 
 
 class DatabaseHandler:
+    """ Database handler only new once """
+
+    # TODO : create a table save users in database
 
     def __init__(self):
         """ Initial Class """
@@ -31,161 +34,166 @@ class DatabaseHandler:
             #     print("Summary Table Already Exist")
             self._database.rollback()
 
-    def create_tables(self):
-        """ Create summary table & type tables """
-        # TODO : add username to table name
-
+    def _create_initial_table(self, user_name):
+        """ Create summary & users table """
         # Create summary table
         sql_str = self._sql.get_create_summary_table_str()
         self._send_sql_cmd(sql_str)
 
+        # Create users table
+        sql_str = self._sql.get_create_user_table_str()
+        self._send_sql_cmd(sql_str)
+
+        # New user
+        self._new_user(user_name)
+
+    def _new_user(self, user_name):
+        """ When new user get in, insert to users table & create user's file_type table """
+        # Insert user to users table
+        sql_str2 = self._sql.get_insert_user_table_str(user_name)
+        self._send_sql_cmd(sql_str2)
+
+        # Create (user)_(file_type) table
+        self._create_user_type_table(user_name)
+
+    def _create_user_type_table(self, user_name):
+        """ Create (user)_(file_type) table """
         # Create Tables
         for file_type in self._dict.type_tablename_dict:
             # create each table
-            class_sql_str = self._sql.get_create_type_table_str(file_type)
-            self._send_sql_cmd(class_sql_str)
+            type_sql_str = self._sql.get_create_type_table_str(user_name, file_type)
+            self._send_sql_cmd(type_sql_str)
 
-    def search_path(self, path):
-        """ Search path layer by layer to find files """
+    def _insert_folder_to_tables(self, path, folder, user_name):
+        """ Insert folder to tables """
+        insert_summary_sql_str, insert_type_sql_str = \
+            self._sql.get_insert_folder_str(path, folder, user_name)
 
+        self._send_sql_cmd(insert_summary_sql_str)
+        self._send_sql_cmd(insert_type_sql_str)
+
+    def _insert_file_to_tables(self, path, file, user_name):
+        """ Insert File to tables """
+        insert_summary_sql_str, insert_type_sql_str = \
+            self._sql.get_insert_tables_str(path, file, user_name)
+
+        self._send_sql_cmd(insert_summary_sql_str)
+        self._send_sql_cmd(insert_type_sql_str)
+
+    def _check_path(self, path, user_name):
+        """ When initial search path layer by layer to find files & add """
         file_list = os.listdir(path)
         for file in file_list:
             full_path = os.path.join(path, file)
             if os.path.isdir(full_path):
                 folder = file
                 # call insert
-                self.insert_folder_to_tables(path, folder)
-                self.search_path(full_path)
+                self._insert_folder_to_tables(path, folder, user_name)
+                self._check_path(full_path, user_name)
             elif os.path.isfile(full_path):
-                self.insert_file_to_tables(path, file)
+                self._insert_file_to_tables(path, file, user_name)
 
-    def insert_folder_to_tables(self, path, folder):
-        """ Insert folder to tables """
+    def _get_json_payload(self,data, status=0, message="sucess"):
+        """ Form defined format json payload """
+        root = {}
+        root['status'] = status
+        root['message'] = message
+        root['data'] = data
+        return json.dumps(root)
 
-        insert_summary_sql_str, insert_type_sql_str = self._sql.get_insert_folder_str(path, folder)
+    def initial_database_handler(self, path, user_name):
+        """ Initial database handler : first time search path & create table """
+        self._create_initial_table(user_name)
+        self._check_path(path, user_name)
 
-        self._send_sql_cmd(insert_summary_sql_str)
-        self._send_sql_cmd(insert_type_sql_str)
+    def update_database_handler(self, path, user_name):
+        """ Update or create table when file been new """
+        sql_str = self._sql.get_select_user_table_str()
+        self._send_sql_cmd(sql_str)
 
-    def insert_file_to_tables(self, path, file):
-        """ Insert File to tables """
+        user_dict = []
+        result = self._cursor.fetchall()
+        for row in result:
+            # row[1] = user
+            user_dict.append(row[1])
 
-        insert_summary_sql_str, insert_type_sql_str = self._sql.get_insert_tables_str(path, file)
+        self._database.commit()
 
-        self._send_sql_cmd(insert_summary_sql_str)
-        self._send_sql_cmd(insert_type_sql_str)
+        # inside or not
+        if user_name not in user_dict:
+            self._new_user(user_name)
 
-    def check_path(self, path):
-        """ Start """
-        self.create_tables()
-        self.search_path(path)
+        # check path and insert files
+        self._check_path(path, user_name)
 
     def clear_all(self):
         """ Clear all tables """
-        self._send_sql_cmd("drop table music;")
-        self._send_sql_cmd("drop table file;")
-        self._send_sql_cmd("drop table video;")
+        sql_str = "SELECT * FROM users;"
+        self._cursor.execute(sql_str)
+
+        user_dict = []
+        result = self._cursor.fetchall()
+        for row in result:
+            # row[1] = user
+            user_dict.append(row[1])
+
+        self._database.commit()
+
+        for user in user_dict:
+            for file_type in self._dict.type_tablename_dict:
+                drop_sql = "DROP TABLE "
+                drop_sql += user
+                drop_sql += "_"
+                drop_sql += file_type
+                self._send_sql_cmd(drop_sql)
+
         self._send_sql_cmd("drop table summary;")
-        self._send_sql_cmd("drop table image;")
-        self._send_sql_cmd("drop table folder;")
+        self._send_sql_cmd("drop table users;")
 
-    def get_summary_table(self):
+    def get_user_type_table(self, user_name, file_type):
+        """ Return user's (type) table with id """
+        # TODO : define return type
 
-        get_summary_sql_str = self._sql.get_summary_table_str()
+        sql_str = self._sql.get_user_file_type_str(user_name, file_type)
+        self._cursor.execute(sql_str)
 
-        self._cursor.execute(get_summary_sql_str)
-
-        return_dict = []
+        id_list = []
         result = self._cursor.fetchall()
         for row in result:
-            tempdict = {}
-            # print("1 : %s  2 : %s  3 : %s" % (row[1],row[2],row[3]))
-            tempdict['type'] = row[1]
-            tempdict['name'] = row[2]
-            tempdict['path'] = row[3]
-
-            return_dict.append(tempdict)
+            # row[1] = user
+            id_list.append(row[0])
 
         self._database.commit()
 
-        return json.dumps(return_dict)
+        return id_list
 
-    def get_type_table(self, file_type):
+    def get_file_path_with_id(self, file_id):
+        """ Return file's path with file id (summary table) """
+        sql_str = self._sql.get_file_path_with_id_str(file_id)
+        self._cursor.execute(sql_str)
 
-        get_type_sql_str = self._sql.get_summary_table_by_type_str(file_type)
-
-        self._cursor.execute(get_type_sql_str)
-
-        return_dict = []
         result = self._cursor.fetchall()
-        for row in result:
-            tempdict = {}
-            # print("1 : %s  2 : %s  3 : %s" % (row[1],row[2],row[3]))
-            tempdict['type'] = row[1]
-            tempdict['name'] = row[2]
-            tempdict['path'] = row[3]
 
-            return_dict.append(tempdict)
+        return_path = result[0][0] + "/"
+        return_path += result[0][1]
 
         self._database.commit()
 
-        return json.dumps(return_dict)
-
-    def get_path_files(self, path):
-        get_path_files_sql_str = self._sql.get_path_files_str(path)
-        self._cursor.execute(get_path_files_sql_str)
-
-        return_dict = []
-        result = self._cursor.fetchall()
-        for row in result:
-            tempdict = {}
-            # print("1 : %s  2 : %s  3 : %s" % (row[1],row[2],row[3]))
-            tempdict['type'] = row[1]
-            tempdict['name'] = row[2]
-            tempdict['path'] = row[3]
-
-            return_dict.append(tempdict)
-
-        self._database.commit()
-
-        return json.dumps(return_dict)
-
-    def set_thumbnail(self):
-        get_type_sql_str = self._sql.get_type_str('image')
-        self._cursor.execute(get_type_sql_str)
-
-        id_array = []
-        result = self._cursor.fetchall()
-        for row in result:
-            id_array.append(row[1])
-        self._database.commit()
-
-        for summary_id in id_array:
-            sql = "SELECT * FROM summary WHERE id="
-            sql += str(summary_id)
-            self._cursor.execute(sql)
-            file_list = self._cursor.fetchall()
-            for row in file_list:
-                name = row[2]
-                path = row[3]
-
-                full_path = path + "/"
-                full_path += name
-
-                img = Image.open(full_path)
-                img.thumbnail((36, 36))
-                save_str = "/Users/Terry/mysql_resize/user1/"
-                save_str += str(summary_id)
-                save_str += ".jpg"
-                img.save(save_str)
-        self._database.commit()
+        return return_path
 
 
-dd = DatabaseHandler()
-# dd.set_thumbnail()
-# dd.get_path_files("/Volumes/YMH/MySQLTestFiles/audio")
-dd.clear_all()
-dd.check_path("/Users/Terry/Desktop/MySQLFIles")
-# dd.get_summary_table()
-# print(dd.get_type_table("image"))
-print(" Done ! ")
+# Example :
+
+if __name__ == "__main__":
+    dd = DatabaseHandler()
+
+    dd.clear_all()
+
+    # 第一次近來
+    dd.initial_database_handler("/Users/Terry/Desktop/MySQLFIles", "terry")
+    # 要加入的新路徑
+    dd.update_database_handler("/Users/Terry/Desktop/MySQLFiles2", "terry")
+
+    print(dd.get_user_type_table('terry', 'image'))
+
+    print(" Done ! ")
