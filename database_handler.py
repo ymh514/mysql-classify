@@ -93,7 +93,7 @@ class DatabaseHandler:
             elif os.path.isfile(full_path):
                 self._insert_file_to_tables(path, file, user_name)
 
-    def _get_json_payload(self,data, status=0, message="sucess"):
+    def _get_json_payload(self, data, status=0, message="sucess"):
         """ Form defined format json payload """
         root = {}
         root['status'] = status
@@ -152,22 +152,24 @@ class DatabaseHandler:
 
     def get_user_type_table(self, user_name, file_type):
         """ Return user's (type) table with id """
-        # TODO : define return type
-
-        ## only return id
         sql_str = self._sql.get_user_file_type_str(user_name, file_type)
         self._cursor.execute(sql_str)
 
-        id_list = []
+        data_list = []
         result = self._cursor.fetchall()
         for row in result:
-            # row[1] = user
-            id_list.append(row[0])
+            temp = dict()
+            temp['id'] = row[0]
+            temp['file_name'] = row[1]
+            temp['time'] = row[2]
+            temp['type'] = file_type
+            data_list.append(temp)
 
         self._database.commit()
 
-        return id_list
-        ## only return id
+        pack_data_list = dict()
+        pack_data_list['list'] = data_list
+        return self._get_json_payload(pack_data_list)
 
     def get_file_path_with_id(self, file_id):
         """ Return file's path with file id (summary table) """
@@ -191,11 +193,11 @@ if __name__ == "__main__":
 
     dd.clear_all()
 
-    # 第一次近來
+    # 第一次進來
     dd.initial_database_handler("/Users/Terry/Desktop/MySQLFIles", "terry")
     # 要加入的新路徑
     dd.update_database_handler("/Users/Terry/Desktop/MySQLFiles2", "terry")
 
-    print(dd.get_user_type_table('terry', 'image'))
+    print(dd.get_user_type_table('terry', 'file'))
 
     print(" Done ! ")

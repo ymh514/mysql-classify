@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b1142dc-87b0-4f8d-a915-0e0ba2c6a70a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database_handler.py" afterPath="$PROJECT_DIR$/database_handler.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sql_string.py" afterPath="$PROJECT_DIR$/sql_string.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -13,11 +15,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="750">
+      <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="96">
+              <caret line="15" column="22" lean-forward="false" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="database_handler.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/database_handler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="269">
-              <caret line="162" column="26" lean-forward="true" selection-start-line="162" selection-start-column="26" selection-end-line="162" selection-end-column="26" />
+            <state relative-caret-position="318">
+              <caret line="109" column="45" lean-forward="true" selection-start-line="109" selection-start-column="45" selection-end-line="109" selection-end-column="45" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
                 <element signature="e#271#530#0" expanded="false" />
@@ -28,19 +40,7 @@
                 <element signature="e#2039#2295#0" expanded="false" />
                 <element signature="e#2366#2618#0" expanded="false" />
                 <element signature="e#2672#3194#0" expanded="false" />
-                <element signature="e#3747#4261#0" expanded="false" />
-                <element signature="e#4296#4970#0" expanded="false" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="21" column="9" lean-forward="true" selection-start-line="21" selection-start-column="9" selection-end-line="21" selection-end-column="9" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -48,8 +48,8 @@
       <file leaf-file-name="sql_string.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sql_string.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="173">
-              <caret line="215" column="32" lean-forward="false" selection-start-line="215" selection-start-column="22" selection-end-line="215" selection-end-column="32" />
+            <state relative-caret-position="189">
+              <caret line="216" column="37" lean-forward="false" selection-start-line="216" selection-start-column="37" selection-end-line="216" selection-end-column="37" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
                 <element signature="e#1150#1300#0" expanded="false" />
@@ -174,8 +174,8 @@
         <option value="$PROJECT_DIR$/DatabaseHandler.py" />
         <option value="$PROJECT_DIR$/dictionary.py" />
         <option value="$PROJECT_DIR$/image_info.py" />
-        <option value="$PROJECT_DIR$/sql_string.py" />
         <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/sql_string.py" />
         <option value="$PROJECT_DIR$/database_handler.py" />
       </list>
     </option>
@@ -461,8 +461,6 @@
             <element signature="e#2039#2295#0" expanded="false" />
             <element signature="e#2366#2618#0" expanded="false" />
             <element signature="e#2672#3194#0" expanded="false" />
-            <element signature="e#3747#4261#0" expanded="false" />
-            <element signature="e#4296#4970#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -483,8 +481,6 @@
             <element signature="e#2039#2295#0" expanded="false" />
             <element signature="e#2366#2618#0" expanded="false" />
             <element signature="e#2672#3194#0" expanded="false" />
-            <element signature="e#3747#4261#0" expanded="false" />
-            <element signature="e#4296#4970#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -541,8 +537,6 @@
             <element signature="e#2039#2295#0" expanded="false" />
             <element signature="e#2366#2618#0" expanded="false" />
             <element signature="e#2672#3194#0" expanded="false" />
-            <element signature="e#3747#4261#0" expanded="false" />
-            <element signature="e#4296#4970#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -591,8 +585,6 @@
             <element signature="e#2039#2295#0" expanded="false" />
             <element signature="e#2366#2618#0" expanded="false" />
             <element signature="e#2672#3194#0" expanded="false" />
-            <element signature="e#3747#4261#0" expanded="false" />
-            <element signature="e#4296#4970#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -641,8 +633,6 @@
             <element signature="e#2039#2295#0" expanded="false" />
             <element signature="e#2366#2618#0" expanded="false" />
             <element signature="e#2672#3194#0" expanded="false" />
-            <element signature="e#3747#4261#0" expanded="false" />
-            <element signature="e#4296#4970#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -732,31 +722,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="21" column="9" lean-forward="true" selection-start-line="21" selection-start-column="9" selection-end-line="21" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sql_string.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="215" column="32" lean-forward="false" selection-start-line="215" selection-start-column="22" selection-end-line="215" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-            <element signature="e#1150#1300#0" expanded="false" />
-            <element signature="e#1351#1673#0" expanded="false" />
-            <element signature="e#1727#2081#0" expanded="false" />
-            <element signature="e#2154#2403#0" expanded="false" />
-            <element signature="e#2473#4631#0" expanded="false" />
-            <element signature="e#4708#6028#0" expanded="false" />
-            <element signature="e#6087#6727#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/google_api_geocodin.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -777,10 +742,35 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="15" column="22" lean-forward="false" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sql_string.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="216" column="37" lean-forward="false" selection-start-line="216" selection-start-column="37" selection-end-line="216" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#1150#1300#0" expanded="false" />
+            <element signature="e#1351#1673#0" expanded="false" />
+            <element signature="e#1727#2081#0" expanded="false" />
+            <element signature="e#2154#2403#0" expanded="false" />
+            <element signature="e#2473#4631#0" expanded="false" />
+            <element signature="e#4708#6028#0" expanded="false" />
+            <element signature="e#6087#6727#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/database_handler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="162" column="26" lean-forward="true" selection-start-line="162" selection-start-column="26" selection-end-line="162" selection-end-column="26" />
+        <state relative-caret-position="318">
+          <caret line="109" column="45" lean-forward="true" selection-start-line="109" selection-start-column="45" selection-end-line="109" selection-end-column="45" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
             <element signature="e#271#530#0" expanded="false" />
@@ -791,8 +781,6 @@
             <element signature="e#2039#2295#0" expanded="false" />
             <element signature="e#2366#2618#0" expanded="false" />
             <element signature="e#2672#3194#0" expanded="false" />
-            <element signature="e#3747#4261#0" expanded="false" />
-            <element signature="e#4296#4970#0" expanded="false" />
           </folding>
         </state>
       </provider>

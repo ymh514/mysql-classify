@@ -213,10 +213,15 @@ class SqlString:
         return sql
 
     def get_user_file_type_str(self, user_name, file_type):
-        sql = "SELECT summary_id FROM "
+        """ Return user_type table's name,path,m_time SQL command """
+        sql = "SELECT summary.id,name,m_time FROM summary INNER JOIN " + user_name
+        sql += "_"
+        sql += file_type
+        sql += " ON summary.id = "
         sql += user_name
         sql += "_"
         sql += file_type
+        sql += ".summary_id;"
         return sql
 
     def get_create_user_table_str(self):
