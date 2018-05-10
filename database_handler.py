@@ -154,6 +154,7 @@ class DatabaseHandler:
         """ Return user's (type) table with id """
         # TODO : define return type
 
+        ## only return id
         sql_str = self._sql.get_user_file_type_str(user_name, file_type)
         self._cursor.execute(sql_str)
 
@@ -166,6 +167,7 @@ class DatabaseHandler:
         self._database.commit()
 
         return id_list
+        ## only return id
 
     def get_file_path_with_id(self, file_id):
         """ Return file's path with file id (summary table) """
