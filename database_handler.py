@@ -2,7 +2,7 @@ import os
 import json
 import time
 
-from PIL import Image
+from PIL import Image, ExifTags
 import pymysql
 
 import dictionary
@@ -94,19 +94,40 @@ class DatabaseHandler:
 
         if file_type == 'image':
             full_path = os.path.join(path, file)
-            img = Image.open(full_path)
-            img.thumbnail((64, 64))
-            save_str = "/Users/Terry/mysql_resize/"
-            save_str += user_name
 
-            # check dir
-            if not os.path.isdir(save_str):
-                os.mkdir(save_str)
+            # prevent rotation
+            try:
+                image = Image.open(full_path)
+                for orientation in ExifTags.TAGS.keys():
+                    if ExifTags.TAGS[orientation] == 'Orientation':
+                        break
+                exif = dict(image._getexif().items())
 
-            save_str += "/"
-            save_str += str(summary_id)
-            save_str += ".jpg"
-            img.save(save_str)
+                if exif[orientation] == 3:
+                    image = image.rotate(180, expand=True)
+                elif exif[orientation] == 6:
+                    image = image.rotate(270, expand=True)
+                elif exif[orientation] == 8:
+                    image = image.rotate(90, expand=True)
+
+                image.thumbnail((64, 64))
+
+                save_str = "/Users/Terry/mysql_resize/"
+                save_str += user_name
+
+                # check dir
+                if not os.path.isdir(save_str):
+                    os.mkdir(save_str)
+
+                save_str += "/"
+                save_str += str(summary_id)
+                save_str += ".jpg"
+                image.save(save_str)
+                image.close()
+
+            except (AttributeError, KeyError, IndexError):
+                # cases: image don't have getexif
+                pass
 
     def _insert_file_to_tables(self, path, file, user_name):
         """ Insert File to tables """
@@ -233,14 +254,13 @@ class DatabaseHandler:
 
         return return_path
 
-    # def user_add_file(self,file_name,user_name):
-    #     """ When a user add a file """
+        # def user_add_file(self,file_name,user_name):
+        #     """ When a user add a file """
 
 
 # Example :
 
 if __name__ == "__main__":
-
     START_TIME = time.time()
 
     dd = DatabaseHandler()
