@@ -1,5 +1,7 @@
 import os
 import json
+import time
+
 from PIL import Image
 import pymysql
 
@@ -73,26 +75,27 @@ class DatabaseHandler:
     def _set_thumbnail(self, path, file, user_name):
         """ Generate thumbnail """
         #  Generate thumbnail for image
-        get_summary_id_sql = "SELECT id,type FROM summary WHERE name="
+        get_summary_id_sql = "SELECT id,type FROM summary WHERE name=\""
         get_summary_id_sql += file
-        get_summary_id_sql += " AND path="
+        get_summary_id_sql += "\" AND path=\""
         get_summary_id_sql += path
+        get_summary_id_sql += "\";"
+
         self._send_sql_cmd(get_summary_id_sql)
 
-        summary_id = None
+        summary_id = 0
         file_type = ""
         result = self._cursor.fetchall()
         for row in result:
             # row[1] = user
-            summary_id = row[0][0]
-            file_type = row[0][1]
-
+            summary_id = row[0]
+            file_type = row[1]
         self._database.commit()
 
         if file_type == 'image':
             full_path = os.path.join(path, file)
             img = Image.open(full_path)
-            img.thumbnail((36, 36))
+            img.thumbnail((64, 64))
             save_str = "/Users/Terry/mysql_resize/"
             save_str += user_name
 
@@ -237,6 +240,9 @@ class DatabaseHandler:
 # Example :
 
 if __name__ == "__main__":
+
+    START_TIME = time.time()
+
     dd = DatabaseHandler()
 
     dd.clear_all()
@@ -244,10 +250,13 @@ if __name__ == "__main__":
     # #第一次進來
     dd.initial_database_handler("/Users/Terry/Desktop/terry_dir", "terry")
 
-    # #要更新家務的新路徑或檔案 # input folder id, file_name
+    # #要更新加入的新路徑或檔案 # input folder id, file_name
     # dd.update_database_handler("/Users/Terry/Desktop/jack_dir", "jack")
 
     # #取得某個user的type table json
-    # print(dd.get_user_type_table('jack', 'file'))
+    # print(dd.get_user_type_table('terry', 'image'))
 
-    print(" Done ! ")
+    # #put id get file real path
+    # print(dd.get_file_path_with_id(20))
+
+    print("--- Done ! cost : %s seconds ---" % (time.time() - START_TIME))

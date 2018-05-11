@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b1142dc-87b0-4f8d-a915-0e0ba2c6a70a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/city_location.py" afterPath="$PROJECT_DIR$/city_location.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database_handler.py" afterPath="$PROJECT_DIR$/database_handler.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dictionary.py" afterPath="$PROJECT_DIR$/dictionary.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sql_string.py" afterPath="$PROJECT_DIR$/sql_string.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,12 +17,10 @@
       <file leaf-file-name="database_handler.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/database_handler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="98">
-              <caret line="237" column="0" lean-forward="true" selection-start-line="237" selection-start-column="0" selection-end-line="237" selection-end-column="0" />
+            <state relative-caret-position="-824">
+              <caret line="177" column="32" lean-forward="true" selection-start-line="177" selection-start-column="32" selection-end-line="177" selection-end-column="32" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
-                <element signature="e#1272#1586#0" expanded="false" />
-                <element signature="e#1646#1928#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -33,8 +29,8 @@
       <file leaf-file-name="city_location.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/city_location.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="454">
-              <caret line="35" column="70" lean-forward="true" selection-start-line="35" selection-start-column="70" selection-end-line="35" selection-end-column="70" />
+            <state relative-caret-position="-227">
+              <caret line="9" column="7" lean-forward="true" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="7" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -45,8 +41,8 @@
       <file leaf-file-name="dictionary.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dictionary.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="76" column="13" lean-forward="true" selection-start-line="76" selection-start-column="13" selection-end-line="76" selection-end-column="13" />
+            <state relative-caret-position="128">
+              <caret line="49" column="27" lean-forward="true" selection-start-line="49" selection-start-column="27" selection-end-line="49" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -55,15 +51,15 @@
       <file leaf-file-name="sql_string.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sql_string.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="368">
-              <caret line="248" column="0" lean-forward="true" selection-start-line="248" selection-start-column="0" selection-end-line="248" selection-end-column="0" />
+            <state relative-caret-position="174">
+              <caret line="86" column="0" lean-forward="false" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
-                <element signature="e#5361#6681#0" expanded="false" />
-                <element signature="e#7685#8031#0" expanded="false" />
-                <element signature="e#8082#8263#0" expanded="false" />
-                <element signature="e#8325#8501#0" expanded="false" />
-                <element signature="e#8552#8660#0" expanded="false" />
+                <element signature="e#5418#6738#0" expanded="false" />
+                <element signature="e#7742#8088#0" expanded="false" />
+                <element signature="e#8139#8320#0" expanded="false" />
+                <element signature="e#8382#8558#0" expanded="false" />
+                <element signature="e#8609#8717#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -116,7 +112,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getFileType</find>
       <find>typeCreateStruct</find>
       <find>typeInsertStruct</find>
       <find>getCreateSummaryTableStr</find>
@@ -146,6 +141,7 @@
       <find>get_file_path_with_id_str</find>
       <find>_imageInfo</find>
       <find>_typeStruct</find>
+      <find>to lowe</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -325,8 +321,8 @@
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.test (1)" />
-        <item index="1" class="java.lang.String" itemvalue="Python.image_info" />
-        <item index="2" class="java.lang.String" itemvalue="Python.sql_string" />
+        <item index="1" class="java.lang.String" itemvalue="Python.sql_string" />
+        <item index="2" class="java.lang.String" itemvalue="Python.image_info" />
         <item index="3" class="java.lang.String" itemvalue="Python.city_location" />
         <item index="4" class="java.lang.String" itemvalue="Python.test (3)" />
       </list>
@@ -352,10 +348,10 @@
     <frame x="0" y="23" width="1280" height="777" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15105008" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15105008" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24193548" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24193548" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -454,8 +450,6 @@
           <caret line="166" column="41" lean-forward="true" selection-start-line="166" selection-start-column="41" selection-end-line="166" selection-end-column="41" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#1272#1586#0" expanded="false" />
-            <element signature="e#1646#1928#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -468,8 +462,6 @@
           <caret line="111" column="0" lean-forward="true" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#1272#1586#0" expanded="false" />
-            <element signature="e#1646#1928#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -512,8 +504,6 @@
           <caret line="204" column="29" lean-forward="false" selection-start-line="204" selection-start-column="29" selection-end-line="204" selection-end-column="29" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#1272#1586#0" expanded="false" />
-            <element signature="e#1646#1928#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -554,8 +544,6 @@
           <caret line="204" column="29" lean-forward="false" selection-start-line="204" selection-start-column="29" selection-end-line="204" selection-end-column="29" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#1272#1586#0" expanded="false" />
-            <element signature="e#1646#1928#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -596,8 +584,6 @@
           <caret line="208" column="20" lean-forward="false" selection-start-line="208" selection-start-column="5" selection-end-line="208" selection-end-column="20" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#1272#1586#0" expanded="false" />
-            <element signature="e#1646#1928#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -651,14 +637,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py" />
     <entry file="file://$PROJECT_DIR$/resizeimage.py" />
-    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pyinotify.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
@@ -689,47 +667,53 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dictionary.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="49" column="27" lean-forward="true" selection-start-line="49" selection-start-column="27" selection-end-line="49" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/city_location.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="454">
-          <caret line="35" column="70" lean-forward="true" selection-start-line="35" selection-start-column="70" selection-end-line="35" selection-end-column="70" />
+        <state relative-caret-position="-227">
+          <caret line="9" column="7" lean-forward="true" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="7" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dictionary.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="76" column="13" lean-forward="true" selection-start-line="76" selection-start-column="13" selection-end-line="76" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sql_string.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="248" column="0" lean-forward="true" selection-start-line="248" selection-start-column="0" selection-end-line="248" selection-end-column="0" />
+        <state relative-caret-position="174">
+          <caret line="86" column="0" lean-forward="false" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
-            <element signature="e#5361#6681#0" expanded="false" />
-            <element signature="e#7685#8031#0" expanded="false" />
-            <element signature="e#8082#8263#0" expanded="false" />
-            <element signature="e#8325#8501#0" expanded="false" />
-            <element signature="e#8552#8660#0" expanded="false" />
+            <element signature="e#5418#6738#0" expanded="false" />
+            <element signature="e#7742#8088#0" expanded="false" />
+            <element signature="e#8139#8320#0" expanded="false" />
+            <element signature="e#8382#8558#0" expanded="false" />
+            <element signature="e#8609#8717#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/database_handler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="98">
-          <caret line="237" column="0" lean-forward="true" selection-start-line="237" selection-start-column="0" selection-end-line="237" selection-end-column="0" />
+        <state relative-caret-position="-824">
+          <caret line="177" column="32" lean-forward="true" selection-start-line="177" selection-start-column="32" selection-end-line="177" selection-end-column="32" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#1272#1586#0" expanded="false" />
-            <element signature="e#1646#1928#0" expanded="false" />
           </folding>
         </state>
       </provider>

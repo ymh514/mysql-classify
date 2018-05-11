@@ -82,6 +82,7 @@ class SqlString:
         summary_sql = "INSERT INTO summary(user,type,name,path,c_time,m_time,a_time,size) VALUES(\""
 
         # to lower case, cause some file_extension save as upper case
+        lower_file_extension = str.lower(file_extension)
         file_type = self._dict.get_file_type(str.lower(file_extension))
 
         summary_sql += user_name
