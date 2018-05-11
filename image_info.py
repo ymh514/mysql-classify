@@ -2,10 +2,12 @@ from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 from datetime import datetime
 import os
+import city_location
 
 class ImageInfo:
     def __init__(self):
         """ Initial """
+        self._city = city_location.CityLocation()
 
     def get_exif_data(self, image):
         """Returns a dictionary from the exif data of an PIL Image item. Also converts the GPS Tags"""
@@ -82,7 +84,12 @@ class ImageInfo:
         else:
             return None
 
-
+    def get_city_location(self,lat,lon):
+        """ Return lat,long nearest city """
+        if lat is None and lon is None:
+            return None
+        city = self._city.nearest_city(lat,lon)
+        return city.city_name
 
 ################
 # Example ######

@@ -10,7 +10,8 @@ class TypeStruct:
     def type_create_struct(self, file_type):
         return {
             'image': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,latitude FLOAT(6) DEFAULT NULL,'
-                     'longitude FLOAT(6) DEFAULT NULL,taken_time INT DEFAULT NULL,PRIMARY KEY (id));',
+                     'longitude FLOAT(6) DEFAULT NULL,city VARCHAR(20) DEFAULT NULL,taken_time INT DEFAULT NULL,'
+                     'PRIMARY KEY (id));',
             'video': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'music': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'file': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
@@ -19,7 +20,7 @@ class TypeStruct:
 
     def type_insert_struct(self, file_type):
         return {
-            'image': '(summary_id,latitude,longitude,taken_time)',
+            'image': '(summary_id,latitude,longitude,city,taken_time)',
             'video': '(summary_id)',
             'music': '(summary_id)',
             'file': '(summary_id)',
@@ -112,6 +113,7 @@ class SqlString:
 
             lat, lon = self._image_info.get_lat_lon(exif_data)
             time = self._image_info.get_date_taken(image)
+            city = self._image_info.get_city_location(lat, lon)
 
             if time is None:
                 time = 'NULL'
@@ -119,12 +121,17 @@ class SqlString:
                 lat = 'NULL'
             if lon is None:
                 lon = 'NULL'
+            if city is None:
+                city = 'NULL'
+
 
             type_sql += ","
             type_sql += str(lat)
             type_sql += ","
             type_sql += str(lon)
-            type_sql += ","
+            type_sql += ",\'"
+            type_sql += str(city)
+            type_sql += "\',"
             type_sql += str(time)
 
         type_sql += " From summary where summary.name=\""
@@ -132,7 +139,6 @@ class SqlString:
         type_sql += "\" AND path=\""
         type_sql += path
         type_sql += "\";"
-
         return summary_sql, type_sql
 
     def get_insert_folder_str(self, path, folder_name, user_name):

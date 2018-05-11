@@ -236,13 +236,13 @@ class DatabaseHandler:
 if __name__ == "__main__":
     dd = DatabaseHandler()
 
-    # dd.clear_all()
+    dd.clear_all()
 
     # #第一次進來
-    # dd.initial_database_handler("/Users/Terry/Desktop/terry_dir", "terry")
+    dd.initial_database_handler("/Users/Terry/Desktop/terry_dir", "terry")
 
     # #要更新家務的新路徑或檔案 # input folder id, file_name
-    dd.update_database_handler("/Users/Terry/Desktop/testdog.jpg", "jack")
+    # dd.update_database_handler("/Users/Terry/Desktop/jack_dir", "jack")
 
     # #取得某個user的type table json
     # print(dd.get_user_type_table('jack', 'file'))

@@ -53,6 +53,7 @@ class Dictionary:
         'md': 'file',
         'json': 'file',
         'csv': 'file',
+
         }
 
     def get_file_type(self, file_extension):
