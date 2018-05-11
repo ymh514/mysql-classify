@@ -1,9 +1,9 @@
 import math
 import os
+
 from PIL import Image
 
-import image_info
-import dictionary
+from database.common_lib import dictionary, image_info
 
 
 class TypeStruct:
@@ -128,7 +128,6 @@ class SqlString:
                 lon = 'NULL'
             if city is None:
                 city = 'NULL'
-
 
             type_sql += ","
             type_sql += str(lat)

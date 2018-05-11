@@ -1,8 +1,9 @@
-from PIL import Image
-from PIL.ExifTags import TAGS, GPSTAGS
 from datetime import datetime
-import os
-import city_location
+
+from PIL.ExifTags import TAGS, GPSTAGS
+
+from database.common_lib import city_location
+
 
 class ImageInfo:
     def __init__(self):
@@ -95,7 +96,6 @@ class ImageInfo:
 # Example ######
 ################
 # import googlemaps
-import json
 # if __name__ == "__main__":
 #
 #     imageinfo = ImageInfo()
