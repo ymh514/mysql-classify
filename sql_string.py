@@ -14,6 +14,8 @@ class TypeStruct:
                      'PRIMARY KEY (id));',
             'video': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'music': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
+            'document': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
+            'archives': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'file': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'folder': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));'
         }.get(file_type)
@@ -23,6 +25,8 @@ class TypeStruct:
             'image': '(summary_id,latitude,longitude,city,taken_time)',
             'video': '(summary_id)',
             'music': '(summary_id)',
+            'document': '(summary_id)',
+            'archives': '(summary_id)',
             'file': '(summary_id)',
             'folder': '(summary_id)'
         }.get(file_type)

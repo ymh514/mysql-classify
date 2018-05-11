@@ -230,6 +230,9 @@ class DatabaseHandler:
 
         return return_path
 
+    # def user_add_file(self,file_name,user_name):
+    #     """ When a user add a file """
+
 
 # Example :
 
@@ -246,7 +249,5 @@ if __name__ == "__main__":
 
     # #取得某個user的type table json
     # print(dd.get_user_type_table('jack', 'file'))
-
-
 
     print(" Done ! ")

@@ -39,5 +39,6 @@ class CityLocation:
                 self.WORLD_CITIES_DICT[city_coordinate_key] = c
 
     def nearest_city(self, latitude, longitude):
+        """ Return city information """
         nearest_city_coordinate = self._world_cities_kdtree.search_nn((latitude, longitude,))
         return self.WORLD_CITIES_DICT[nearest_city_coordinate[0].data]
