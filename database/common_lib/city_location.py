@@ -29,7 +29,8 @@ class CityLocation:
             cities = csv.reader(csv_file)
 
             # discard the headers
-            cities.__next__()
+            next(cities)
+            # cities.__next__()
 
             # populate geo points into kdtree
             for city in cities:

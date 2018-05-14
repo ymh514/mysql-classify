@@ -2,18 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b1142dc-87b0-4f8d-a915-0e0ba2c6a70a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/database/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/database/common_lib/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/google_api_geocodin.py" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/city_location.py" afterPath="$PROJECT_DIR$/database/common_lib/city_location.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/database_handler.py" afterPath="$PROJECT_DIR$/database/database_handler.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/dictionary.py" afterPath="$PROJECT_DIR$/database/common_lib/dictionary.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/image_info.py" afterPath="$PROJECT_DIR$/database/common_lib/image_info.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/pyinotify.py" afterPath="$PROJECT_DIR$/database/pyinotify.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/simplemaps-worldcities-basic.csv" afterPath="$PROJECT_DIR$/database/common_lib/simplemaps-worldcities-basic.csv" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/sql_string.py" afterPath="$PROJECT_DIR$/database/common_lib/sql_string.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database/common_lib/city_location.py" afterPath="$PROJECT_DIR$/database/common_lib/city_location.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database/common_lib/image_info.py" afterPath="$PROJECT_DIR$/database/common_lib/image_info.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database/common_lib/sql_string.py" afterPath="$PROJECT_DIR$/database/common_lib/sql_string.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database/database_handler.py" afterPath="$PROJECT_DIR$/database/database_handler.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test.py" afterPath="$PROJECT_DIR$/test.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -24,37 +18,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="750">
-      <file leaf-file-name="database_handler.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="database_handler.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/database/database_handler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+            <state relative-caret-position="248">
+              <caret line="309" column="32" lean-forward="true" selection-start-line="309" selection-start-column="32" selection-end-line="309" selection-end-column="32" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="20" column="41" lean-forward="true" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
-              <folding>
-                <element signature="e#0#37#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="city_location.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/database/common_lib/city_location.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="7" lean-forward="true" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="7" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -63,15 +33,49 @@
       <file leaf-file-name="sql_string.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/database/common_lib/sql_string.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="101">
-              <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+            <state relative-caret-position="282">
+              <caret line="309" column="31" lean-forward="false" selection-start-line="309" selection-start-column="8" selection-end-line="309" selection-end-column="31" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
-                <element signature="e#5437#6757#0" expanded="false" />
-                <element signature="e#7761#8107#0" expanded="false" />
-                <element signature="e#8158#8339#0" expanded="false" />
-                <element signature="e#8401#8577#0" expanded="false" />
-                <element signature="e#8628#8736#0" expanded="false" />
+                <element signature="e#5380#6700#0" expanded="false" />
+                <element signature="e#7413#7594#0" expanded="false" />
+                <element signature="e#7656#7832#0" expanded="false" />
+                <element signature="e#7883#7991#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="126">
+              <caret line="11" column="26" lean-forward="false" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
+              <folding>
+                <element signature="e#0#37#0" expanded="true" />
+                <marker date="1526297600587" expanded="true" signature="176:355" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dictionary.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/database/common_lib/dictionary.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1054">
+              <caret line="62" column="26" lean-forward="false" selection-start-line="62" selection-start-column="26" selection-end-line="62" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="city_location.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/database/common_lib/city_location.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="337">
+              <caret line="30" column="33" lean-forward="false" selection-start-line="30" selection-start-column="33" selection-end-line="30" selection-end-column="33" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -81,7 +85,7 @@
         <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="170">
-              <caret line="10" column="26" lean-forward="true" selection-start-line="10" selection-start-column="26" selection-end-line="10" selection-end-column="26" />
+              <caret line="10" column="26" lean-forward="false" selection-start-line="10" selection-start-column="26" selection-end-line="10" selection-end-column="26" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
               </folding>
@@ -92,9 +96,10 @@
       <file leaf-file-name="image_info.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/database/common_lib/image_info.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="4" column="0" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+            <state relative-caret-position="113">
+              <caret line="80" column="28" lean-forward="true" selection-start-line="80" selection-start-column="28" selection-end-line="80" selection-end-column="28" />
               <folding>
+                <element signature="e#0#29#0" expanded="true" />
                 <element signature="e#954#1019#0" expanded="false" />
                 <element signature="e#1071#1469#0" expanded="false" />
               </folding>
@@ -113,16 +118,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>typeCreateStruct</find>
-      <find>typeInsertStruct</find>
-      <find>getCreateSummaryTableStr</find>
-      <find>getInsertTablesStr</find>
-      <find>getInsertFolderStr</find>
-      <find>getDeleteTablesStr</find>
-      <find>getSum</find>
-      <find>get_summary_table_by_type_str</find>
-      <find>getPathFilesStrget</find>
-      <find>getTypeStr</find>
       <find>filename</find>
       <find>folder</find>
       <find>new_update</find>
@@ -143,6 +138,16 @@
       <find>_imageInfo</find>
       <find>_typeStruct</find>
       <find>to lowe</find>
+      <find>string</find>
+      <find>b</find>
+      <find>datetime</find>
+      <find>print</find>
+      <find>get_update_file_table_str</find>
+      <find>get_files_under_folder</find>
+      <find>get_files_under_folder_str</find>
+      <find>thumbnail</find>
+      <find>thumb</find>
+      <find>resise_path</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -172,10 +177,12 @@
         <option value="$PROJECT_DIR$/sql_string.py" />
         <option value="$PROJECT_DIR$/database_handler.py" />
         <option value="$PROJECT_DIR$/database/sql_string.py" />
+        <option value="$PROJECT_DIR$/database/common_lib/city_location.py" />
+        <option value="$PROJECT_DIR$/../../../pythone_test.py" />
         <option value="$PROJECT_DIR$/database/common_lib/image_info.py" />
-        <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/database/common_lib/sql_string.py" />
         <option value="$PROJECT_DIR$/database/database_handler.py" />
+        <option value="$PROJECT_DIR$/test.py" />
       </list>
     </option>
   </component>
@@ -199,7 +206,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -212,10 +218,17 @@
               <item name="mysql_classify" type="462c0819:PsiDirectoryNode" />
               <item name="database" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="mysql_classify" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mysql_classify" type="462c0819:PsiDirectoryNode" />
+              <item name="database" type="462c0819:PsiDirectoryNode" />
+              <item name="common_lib" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -242,36 +255,36 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.test (3)">
-    <configuration name="city_location" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="database_handler" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/database" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="mysql_classify" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/city_location.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/database/database_handler.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
-    <configuration name="image_info" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="pythone_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../.." />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="mysql_classify" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/database/common_lib/image_info.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../../pythone_test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -330,17 +343,17 @@
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.test (1)" />
       <item index="1" class="java.lang.String" itemvalue="Python.test (3)" />
-      <item index="2" class="java.lang.String" itemvalue="Python.city_location" />
-      <item index="3" class="java.lang.String" itemvalue="Python.sql_string" />
-      <item index="4" class="java.lang.String" itemvalue="Python.image_info" />
+      <item index="2" class="java.lang.String" itemvalue="Python.sql_string" />
+      <item index="3" class="java.lang.String" itemvalue="Python.database_handler" />
+      <item index="4" class="java.lang.String" itemvalue="Python.pythone_test" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.test (3)" />
         <item index="1" class="java.lang.String" itemvalue="Python.test (1)" />
-        <item index="2" class="java.lang.String" itemvalue="Python.sql_string" />
-        <item index="3" class="java.lang.String" itemvalue="Python.image_info" />
-        <item index="4" class="java.lang.String" itemvalue="Python.city_location" />
+        <item index="2" class="java.lang.String" itemvalue="Python.database_handler" />
+        <item index="3" class="java.lang.String" itemvalue="Python.pythone_test" />
+        <item index="4" class="java.lang.String" itemvalue="Python.sql_string" />
       </list>
     </recent_temporary>
   </component>
@@ -364,34 +377,24 @@
     <frame x="0" y="23" width="1280" height="777" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1898223" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15831988" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24193548" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19501466" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28739002" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1558966" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24340177" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19501466" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19501466" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -419,31 +422,11 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="11" />
+      <option name="time" value="14" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="17" lean-forward="false" selection-start-line="0" selection-start-column="17" selection-end-line="0" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/common_lib/image_info.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="45" lean-forward="true" selection-start-line="17" selection-start-column="45" selection-end-line="17" selection-end-column="45" />
-          <folding>
-            <element signature="e#954#1019#0" expanded="false" />
-            <element signature="e#1071#1469#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/556.py" />
     <entry file="file://$PROJECT_DIR$/update.py" />
     <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -481,19 +464,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="17" lean-forward="false" selection-start-line="0" selection-start-column="17" selection-end-line="0" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py" />
     <entry file="file://$PROJECT_DIR$/database/common_lib/image_info.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1972">
           <caret line="59" column="70" lean-forward="false" selection-start-line="59" selection-start-column="70" selection-end-line="59" selection-end-column="70" />
           <folding>
+            <element signature="e#0#29#0" expanded="true" />
             <element signature="e#954#1019#0" expanded="false" />
             <element signature="e#1071#1469#0" expanded="false" />
           </folding>
@@ -522,19 +499,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="17" lean-forward="false" selection-start-line="0" selection-start-column="17" selection-end-line="0" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py" />
     <entry file="file://$PROJECT_DIR$/database/common_lib/image_info.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2006">
           <caret line="59" column="70" lean-forward="false" selection-start-line="59" selection-start-column="70" selection-end-line="59" selection-end-column="70" />
           <folding>
+            <element signature="e#0#29#0" expanded="true" />
             <element signature="e#954#1019#0" expanded="false" />
             <element signature="e#1071#1469#0" expanded="false" />
           </folding>
@@ -561,19 +532,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="17" lean-forward="false" selection-start-line="0" selection-start-column="17" selection-end-line="0" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py" />
     <entry file="file://$PROJECT_DIR$/database/common_lib/image_info.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1972">
           <caret line="59" column="70" lean-forward="false" selection-start-line="59" selection-start-column="70" selection-end-line="59" selection-end-column="70" />
           <folding>
+            <element signature="e#0#29#0" expanded="true" />
             <element signature="e#954#1019#0" expanded="false" />
             <element signature="e#1071#1469#0" expanded="false" />
           </folding>
@@ -605,20 +570,14 @@
         <state relative-caret-position="374">
           <caret line="12" column="29" lean-forward="true" selection-start-line="12" selection-start-column="29" selection-end-line="12" selection-end-column="29" />
           <folding>
+            <element signature="e#0#29#0" expanded="true" />
             <element signature="e#954#1019#0" expanded="false" />
             <element signature="e#1071#1469#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="17" lean-forward="true" selection-start-line="0" selection-start-column="17" selection-end-line="0" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py" />
     <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="612">
@@ -652,45 +611,42 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="164">
           <caret line="386" column="0" lean-forward="false" selection-start-line="386" selection-start-column="0" selection-end-line="386" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py" />
+    <entry file="file:///usr/local/Cellar/python3/3.6.2/Frameworks/Python.framework/Versions/3.6/lib/python3.6/csv.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/google_api_geocodin.py">
+    <entry file="file://$PROJECT_DIR$/../../../pythone_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/common_lib/dictionary.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-159">
-          <caret line="49" column="27" lean-forward="true" selection-start-line="49" selection-start-column="27" selection-end-line="49" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/common_lib/sql_string.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="101">
-          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+        <state relative-caret-position="108">
+          <caret line="185" column="34" lean-forward="true" selection-start-line="185" selection-start-column="34" selection-end-line="185" selection-end-column="34" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
-            <element signature="e#5437#6757#0" expanded="false" />
-            <element signature="e#7761#8107#0" expanded="false" />
-            <element signature="e#8158#8339#0" expanded="false" />
-            <element signature="e#8401#8577#0" expanded="false" />
-            <element signature="e#8628#8736#0" expanded="false" />
+            <element signature="e#85#99#0" expanded="false" />
+            <element signature="e#191#3459#0" expanded="false" />
+            <element signature="e#3496#4050#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/Cellar/python3/3.6.2/Frameworks/Python.framework/Versions/3.6/lib/python3.6/_strptime.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="361" column="0" lean-forward="false" selection-start-line="361" selection-start-column="0" selection-end-line="361" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
-          <caret line="10" column="26" lean-forward="true" selection-start-line="10" selection-start-column="26" selection-end-line="10" selection-end-column="26" />
+          <caret line="10" column="26" lean-forward="false" selection-start-line="10" selection-start-column="26" selection-end-line="10" selection-end-column="26" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
           </folding>
@@ -699,9 +655,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/database/common_lib/image_info.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="0" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+        <state relative-caret-position="113">
+          <caret line="80" column="28" lean-forward="true" selection-start-line="80" selection-start-column="28" selection-end-line="80" selection-end-column="28" />
           <folding>
+            <element signature="e#0#29#0" expanded="true" />
             <element signature="e#954#1019#0" expanded="false" />
             <element signature="e#1071#1469#0" expanded="false" />
           </folding>
@@ -710,30 +667,53 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/database/common_lib/city_location.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="7" lean-forward="true" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="7" />
+        <state relative-caret-position="337">
+          <caret line="30" column="33" lean-forward="false" selection-start-line="30" selection-start-column="33" selection-end-line="30" selection-end-column="33" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/database/database_handler.py">
+    <entry file="file://$PROJECT_DIR$/database/common_lib/dictionary.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+        <state relative-caret-position="1054">
+          <caret line="62" column="26" lean-forward="false" selection-start-line="62" selection-start-column="26" selection-end-line="62" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/common_lib/sql_string.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="309" column="31" lean-forward="false" selection-start-line="309" selection-start-column="8" selection-end-line="309" selection-end-column="31" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#5380#6700#0" expanded="false" />
+            <element signature="e#7413#7594#0" expanded="false" />
+            <element signature="e#7656#7832#0" expanded="false" />
+            <element signature="e#7883#7991#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="41" lean-forward="true" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
+        <state relative-caret-position="126">
+          <caret line="11" column="26" lean-forward="false" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
           <folding>
             <element signature="e#0#37#0" expanded="true" />
+            <marker date="1526297600587" expanded="true" signature="176:355" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/database_handler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="248">
+          <caret line="309" column="32" lean-forward="true" selection-start-line="309" selection-start-column="32" selection-end-line="309" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -80,8 +80,14 @@ class ImageInfo:
         """ Return taken time with millisecond """
         if image._getexif():
             # 36867 = 0x9003 = DateTimeOriginal
-            dt_obj = datetime.strptime(image._getexif()[36867], '%Y:%m:%d %H:%M:%S')
-            return dt_obj.timestamp()
+
+            d = datetime.strptime(image._getexif()[36867], "%Y:%m:%d %H:%M:%S").strftime('%s.%f')
+            # d_in_ms = int(float(d) * 1000)
+            # print(d_in_ms)
+            return d
+            # print(image._getexif()[36867])
+            # dt_obj = datetime.strptime(image._getexif()[36867], '%Y:%m:%d %H:%M:%S')
+            # return dt_obj.timestamp()
         else:
             return None
 

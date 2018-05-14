@@ -90,12 +90,13 @@ class DatabaseHandler:
             file_type = row[1]
         self._database.commit()
 
+
         if file_type == 'image':
             full_path = os.path.join(path, file)
 
+            image = Image.open(full_path)
             # prevent rotation
             try:
-                image = Image.open(full_path)
                 for orientation in ExifTags.TAGS.keys():
                     if ExifTags.TAGS[orientation] == 'Orientation':
                         break
@@ -108,32 +109,50 @@ class DatabaseHandler:
                 elif exif[orientation] == 8:
                     image = image.rotate(90, expand=True)
 
-                image.thumbnail((64, 64))
-
-                save_str = "/Users/Terry/mysql_resize/"
-                save_str += user_name
-
-                # check dir
-                if not os.path.isdir(save_str):
-                    os.mkdir(save_str)
-
-                save_str += "/"
-                save_str += str(summary_id)
-                save_str += ".jpg"
-                image.save(save_str)
-                image.close()
-
             except (AttributeError, KeyError, IndexError):
                 # cases: image don't have getexif
                 pass
 
+            image.thumbnail((64, 64))
+            save_str = self.thumbnail_path + "/"
+            save_str += user_name
+
+            # check dir
+            if not os.path.isdir(save_str):
+                os.mkdir(save_str)
+
+            save_str += "/"
+            save_str += str(summary_id)
+            save_str += ".jpg"
+            image.save(save_str)
+            image.close()
+
     def _insert_file_to_tables(self, path, file, user_name):
         """ Insert File to tables """
-        insert_summary_sql_str, insert_type_sql_str = \
-            self._sql.get_insert_tables_str(path, file, user_name)
 
-        self._send_sql_cmd(insert_summary_sql_str)
-        self._send_sql_cmd(insert_type_sql_str)
+        # 先確定是否有在裡面
+        check_sql = self._sql.get_check_file_already_exist_str(path, file, user_name)
+        self._send_sql_cmd(check_sql)
+        summary_id = 0
+        result = self._cursor.fetchall()
+        for row in result:
+            # row[1] = user
+            summary_id = row[0]
+        self._database.commit()
+
+        if summary_id == 0:
+            # not exist
+            insert_summary_sql_str, insert_type_sql_str = \
+                self._sql.get_insert_tables_str(path, file, user_name)
+
+            self._send_sql_cmd(insert_summary_sql_str)
+            self._send_sql_cmd(insert_type_sql_str)
+        else:
+            # already exist
+            update_summary_sql_str, update_type_sql_str = self._sql.get_update_file_table_str(path, file, user_name)
+            self._send_sql_cmd(update_summary_sql_str)
+            self._send_sql_cmd(update_type_sql_str)
+
         self._set_thumbnail(path, file, user_name)
 
     def _check_path(self, path_or_file, user_name):
@@ -170,6 +189,13 @@ class DatabaseHandler:
 
     def initial_database_handler(self, path, user_name):
         """ Initial database handler : first time search path & create table """
+        upper_path = os.path.abspath(os.path.join(os.path.dirname(path), '.'))
+        upper_path += "/mysql_resize"
+        # check dir
+        if not os.path.isdir(upper_path):
+            os.mkdir(upper_path)
+        self.thumbnail_path = upper_path
+
         self._create_initial_table(user_name)
         self._check_path(path, user_name)
 
@@ -238,6 +264,28 @@ class DatabaseHandler:
         pack_data_list['list'] = data_list
         return self._get_json_payload(pack_data_list)
 
+    def get_files_under_folder(self, folder_path):
+        """ Return files under folder with id """
+        sql_str = self._sql.get_files_under_folder_str(folder_path)
+        self._send_sql_cmd(sql_str)
+
+        data_list = []
+        result = self._cursor.fetchall()
+        for row in result:
+            temp = dict()
+            temp['id'] = row[0]
+            temp['file_name'] = row[1]
+            temp['time'] = row[2]
+            temp['type'] = row[3]
+            data_list.append(temp)
+
+        self._database.commit()
+
+        pack_data_list = dict()
+        pack_data_list['list'] = data_list
+        return self._get_json_payload(pack_data_list)
+
+
     def get_file_path_with_id(self, file_id):
         """ Return file's path with file id (summary table) """
         sql_str = self._sql.get_file_path_with_id_str(file_id)
@@ -252,5 +300,18 @@ class DatabaseHandler:
 
         return return_path
 
-        # def user_add_file(self,file_name,user_name):
-        #     """ When a user add a file """
+    def get_image_thumbnail(self,image_id):
+        """ Return image thumbnail with id """
+        sql_str = self._sql.get_image_thumbnail_str(image_id)
+        self._send_sql_cmd(sql_str)
+
+        result = self._cursor.fetchall()
+
+        user_name = result[0][0]
+
+        thumbnail_path = self.thumbnail_path+"/"
+        thumbnail_path += user_name
+        thumbnail_path += "/"
+        thumbnail_path += str(image_id)
+        thumbnail_path += ".jpg"
+        return thumbnail_path

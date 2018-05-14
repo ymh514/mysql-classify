@@ -31,7 +31,6 @@ class TypeStruct:
             'folder': '(summary_id)'
         }.get(file_type)
 
-
 class SqlString:
     def __init__(self):
         """ Initial """
@@ -82,7 +81,6 @@ class SqlString:
         summary_sql = "INSERT INTO summary(user,type,name,path,c_time,m_time,a_time,size) VALUES(\""
 
         # to lower case, cause some file_extension save as upper case
-        lower_file_extension = str.lower(file_extension)
         file_type = self._dict.get_file_type(str.lower(file_extension))
 
         summary_sql += user_name
@@ -118,6 +116,7 @@ class SqlString:
 
             lat, lon = self._image_info.get_lat_lon(exif_data)
             time = self._image_info.get_date_taken(image)
+
             city = self._image_info.get_city_location(lat, lon)
 
             if time is None:
@@ -184,34 +183,6 @@ class SqlString:
 
         return folder_sql, type_sql
 
-    # def get_delete_tables_str(self, path, file):
-    #     """ Return delete both summary & type table """
-    #     # FIXME : add user_name
-    #     filename, file_extension = os.path.splitext(file)
-    #
-    #     file_extension = file_extension.strip('.')
-    #
-    #     # to lower case, cause some file_extension save as upper case
-    #     file_type = self._dict.get_file_type(str.lower(file_extension))
-    #
-    #     if file_extension == "":
-    #         type_table = "folder"
-    #     else:
-    #         type_table = file_type
-    #
-    #     sql = "DELETE summary,"
-    #     sql += type_table
-    #     sql += " FROM summary INNER JOIN "
-    #     sql += type_table
-    #     sql += " ON "
-    #     sql += type_table
-    #     sql += ".summary_id = summary.id WHERE summary.name=\""
-    #     sql += file
-    #     sql += "\" AND summary.path=\""
-    #     sql += path
-    #     sql += "\";"
-    #     return sql
-
     def get_user_file_type_str(self, user_name, file_type):
         """ Return user_type table's name,path,m_time SQL command """
         sql = "SELECT summary.id,name,m_time,path FROM summary INNER JOIN " + user_name
@@ -223,6 +194,13 @@ class SqlString:
         sql += file_type
         sql += ".summary_id;"
         return sql
+
+    def get_files_under_folder_str(self, folder_path):
+        """ Return files id under folder SQL command """
+        sql = "SELECT summary.id,name,m_time,type FROM summary WHERE path=\"" + folder_path
+        sql += "\";"
+        return sql
+
 
     def get_create_user_table_str(self):
         """ Return create user table SQL command """
@@ -245,4 +223,93 @@ class SqlString:
         """ Return file's path with id """
         sql_str = "SELECT path,name FROM summary WHERE id="
         sql_str += str(summary_id)
+        return sql_str
+
+    def get_check_file_already_exist_str(self,path,file_name,user_name):
+        """ Return fetch from summary  """
+        sql_str = 'SELECT id FROM summary WHERE name=\''
+        sql_str += file_name
+        sql_str += '\' AND path=\''
+        sql_str += path
+        sql_str += '\' AND user=\''
+        sql_str += user_name
+        sql_str += '\';'
+        return sql_str
+
+    def get_update_file_table_str(self,path,file,user_name):
+        """ Return update summary & type talbe str """
+        filename, file_extension = os.path.splitext(file)
+
+        file_extension = file_extension.strip('.')
+
+        c_time = os.stat(path + "/" + file).st_ctime
+        m_time = os.stat(path + "/" + file).st_mtime
+        a_time = os.stat(path + "/" + file).st_atime
+
+        summary_sql = "UPDATE summary SET type=\""
+
+        # to lower case, cause some file_extension save as upper case
+        file_type = self._dict.get_file_type(str.lower(file_extension))
+
+        summary_sql += file_type
+        summary_sql += "\",c_time="
+        summary_sql += str(c_time)
+        summary_sql += ",m_time="
+        summary_sql += str(m_time)
+        summary_sql += ",a_time="
+        summary_sql += str(a_time)
+        summary_sql += ",size=\""
+        summary_sql += self._convert_size(os.stat(path + "/" + file).st_size)
+        summary_sql += "\" WHERE path=\""
+        summary_sql += path
+        summary_sql += "\" AND name=\""
+        summary_sql += file
+        summary_sql += "\" AND user=\""
+        summary_sql += user_name
+        summary_sql += "\";"
+
+        type_sql = ""
+        if file_type == 'image':
+            # Set set thumbnail
+
+            image = Image.open(path + "/" + file)  # load an image through PIL's Image object
+            exif_data = self._image_info.get_exif_data(image)
+
+            lat, lon = self._image_info.get_lat_lon(exif_data)
+            time = self._image_info.get_date_taken(image)
+            city = self._image_info.get_city_location(lat, lon)
+
+            if time is None:
+                time = 'NULL'
+            if lat is None:
+                lat = 'NULL'
+            if lon is None:
+                lon = 'NULL'
+            if city is None:
+                city = 'NULL'
+
+            type_sql += "UPDATE "
+            type_sql += user_name
+            type_sql += "_"
+            type_sql += file_type
+            type_sql += " AS t INNER JOIN summary AS s ON t.summary_id=s.id SET latitude="
+            type_sql += str(lat)
+            type_sql += ",longitude="
+            type_sql += str(lon)
+            type_sql += ",city=\'"
+            type_sql += str(city)
+            type_sql += "\',taken_time="
+            type_sql += str(time)
+            type_sql += " WHERE s.name=\""
+            type_sql += file
+            type_sql += "\" AND path=\""
+            type_sql += path
+            type_sql += "\";"
+        return summary_sql, type_sql
+
+    def get_image_thumbnail_str(self, summary_id):
+        """ Return file's path with id """
+        sql_str = "SELECT user FROM summary WHERE id="
+        sql_str += str(summary_id)
+        sql_str += ";"
         return sql_str
