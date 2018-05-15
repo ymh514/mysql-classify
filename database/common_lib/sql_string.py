@@ -31,6 +31,7 @@ class TypeStruct:
             'folder': '(summary_id)'
         }.get(file_type)
 
+
 class SqlString:
     def __init__(self):
         """ Initial """
@@ -201,7 +202,6 @@ class SqlString:
         sql += "\";"
         return sql
 
-
     def get_create_user_table_str(self):
         """ Return create user table SQL command """
         sql_str = "CREATE TABLE users(id INT NOT NULL AUTO_INCREMENT,name VARCHAR(40) NOT NULL,PRIMARY KEY (id))"
@@ -225,7 +225,7 @@ class SqlString:
         sql_str += str(summary_id)
         return sql_str
 
-    def get_check_file_already_exist_str(self,path,file_name,user_name):
+    def get_check_file_already_exist_str(self, path, file_name, user_name):
         """ Return fetch from summary  """
         sql_str = 'SELECT id FROM summary WHERE name=\''
         sql_str += file_name
@@ -236,7 +236,7 @@ class SqlString:
         sql_str += '\';'
         return sql_str
 
-    def get_update_file_table_str(self,path,file,user_name):
+    def get_update_file_table_str(self, path, file, user_name):
         """ Return update summary & type talbe str """
         filename, file_extension = os.path.splitext(file)
 
@@ -313,3 +313,8 @@ class SqlString:
         sql_str += str(summary_id)
         sql_str += ";"
         return sql_str
+
+    def get_initial_str(self):
+        drop_sql_str = "DROP DATABASE IF EXISTS mydatabase;"
+        create_sql_str = "CREATE DATABASE mydatabase;"
+        return drop_sql_str, create_sql_str

@@ -28,13 +28,23 @@ class DatabaseHandler:
         try:
             self._cursor.execute(sql_str)
             self._database.commit()
-        except BaseException:
-            # if (EXIST_DEBUG_FLAG == 1):
-            #     print("Summary Table Already Exist")
-            self._database.rollback()
+        except Exception as e:
+            print('-----')
+            print(e)
+            print(sql_str)
+            print('-----')
 
-    def _create_initial_table(self, user_name):
-        """ Create summary & users table """
+        else:
+            self._database.commit()
+
+    def clear_all(self):
+        """ Reset database & Create summary & users table """
+        # Reset database
+        drop_str, create_str = self._sql.get_initial_str()
+        self._send_sql_cmd(drop_str)
+        self._send_sql_cmd(create_str)
+        self._database.select_db("mydatabase")
+
         # Create summary table
         sql_str = self._sql.get_create_summary_table_str()
         self._send_sql_cmd(sql_str)
@@ -43,14 +53,11 @@ class DatabaseHandler:
         sql_str = self._sql.get_create_user_table_str()
         self._send_sql_cmd(sql_str)
 
-        # New user
-        self._new_user(user_name)
-
     def _new_user(self, user_name):
         """ When new user get in, insert to users table & create user's file_type table """
         # Insert user to users table
-        sql_str2 = self._sql.get_insert_user_table_str(user_name)
-        self._send_sql_cmd(sql_str2)
+        sql_str = self._sql.get_insert_user_table_str(user_name)
+        self._send_sql_cmd(sql_str)
 
         # Create (user)_(file_type) table
         self._create_user_type_table(user_name)
@@ -199,7 +206,9 @@ class DatabaseHandler:
             os.mkdir(upper_path)
         self._thumbnail_path = upper_path
 
-        self._create_initial_table(user_name)
+        # First user
+        self._new_user(user_name)
+
         self._check_path(path, user_name)
         return self._get_json_payload()
 
@@ -223,30 +232,6 @@ class DatabaseHandler:
         # check path and insert files
         self._check_path(path, user_name)
         return self._get_json_payload()
-
-    def clear_all(self):
-        """ Clear all tables """
-        sql_str = "SELECT * FROM users;"
-        self._send_sql_cmd(sql_str)
-
-        user_dict = []
-        result = self._cursor.fetchall()
-        for row in result:
-            # row[1] = user
-            user_dict.append(row[1])
-
-        self._database.commit()
-
-        for user in user_dict:
-            for file_type in self._dict.type_tablename_dict:
-                drop_sql = "DROP TABLE "
-                drop_sql += user
-                drop_sql += "_"
-                drop_sql += file_type
-                self._send_sql_cmd(drop_sql)
-
-        self._send_sql_cmd("drop table summary;")
-        self._send_sql_cmd("drop table users;")
 
     def get_user_type_table(self, user_name, file_type):
         """ Return user's (type) table with id """
