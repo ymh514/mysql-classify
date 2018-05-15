@@ -21,6 +21,7 @@ class DatabaseHandler:
 
         self._sql = sql_string.SqlString()
         self._dict = dictionary.Dictionary()
+        self._thumbnail_path = ""
 
     def _send_sql_cmd(self, sql_str):
         """ Used to Send SQL Command """
@@ -90,7 +91,6 @@ class DatabaseHandler:
             file_type = row[1]
         self._database.commit()
 
-
         if file_type == 'image':
             full_path = os.path.join(path, file)
 
@@ -114,7 +114,7 @@ class DatabaseHandler:
                 pass
 
             image.thumbnail((64, 64))
-            save_str = self.thumbnail_path + "/"
+            save_str = self._thumbnail_path + "/"
             save_str += user_name
 
             # check dir
@@ -179,12 +179,15 @@ class DatabaseHandler:
                 # '.' start file don't do
                 self._insert_file_to_tables(path, file, user_name)
 
-    def _get_json_payload(self, data, status=0, message='sucess'):
+    def _get_json_payload(self, path=None, data=None, status=0, message='sucess'):
         """ Form defined format json payload """
         root = {}
         root['status'] = status
         root['message'] = message
-        root['data'] = data
+        if data is not None:
+            root['data'] = data
+        if path is not None:
+            root['path'] = path
         return json.dumps(root)
 
     def initial_database_handler(self, path, user_name):
@@ -194,10 +197,11 @@ class DatabaseHandler:
         # check dir
         if not os.path.isdir(upper_path):
             os.mkdir(upper_path)
-        self.thumbnail_path = upper_path
+        self._thumbnail_path = upper_path
 
         self._create_initial_table(user_name)
         self._check_path(path, user_name)
+        return self._get_json_payload()
 
     def update_database_handler(self, path, user_name):
         """ Update new path or file """
@@ -218,6 +222,7 @@ class DatabaseHandler:
 
         # check path and insert files
         self._check_path(path, user_name)
+        return self._get_json_payload()
 
     def clear_all(self):
         """ Clear all tables """
@@ -248,42 +253,49 @@ class DatabaseHandler:
         sql_str = self._sql.get_user_file_type_str(user_name, file_type)
         self._send_sql_cmd(sql_str)
 
-        data_list = []
-        result = self._cursor.fetchall()
-        for row in result:
-            temp = dict()
-            temp['id'] = row[0]
-            temp['file_name'] = row[1]
-            temp['time'] = row[2]
-            temp['type'] = file_type
-            data_list.append(temp)
+        if self._cursor.rowcount > 0:
 
-        self._database.commit()
+            data_list = []
+            result = self._cursor.fetchall()
+            for row in result:
+                temp = dict()
+                temp['id'] = row[0]
+                temp['file_name'] = row[1]
+                temp['time'] = row[2]
+                temp['type'] = file_type
+                data_list.append(temp)
 
-        pack_data_list = dict()
-        pack_data_list['list'] = data_list
-        return self._get_json_payload(pack_data_list)
+            self._database.commit()
+
+            pack_data_list = dict()
+            pack_data_list['list'] = data_list
+            return self._get_json_payload(data=pack_data_list)
+        else:
+            return self._get_json_payload(path="", status=-2, message="not found in database")
 
     def get_files_under_folder(self, folder_path):
         """ Return files under folder with id """
         sql_str = self._sql.get_files_under_folder_str(folder_path)
         self._send_sql_cmd(sql_str)
 
-        data_list = []
-        result = self._cursor.fetchall()
-        for row in result:
-            temp = dict()
-            temp['id'] = row[0]
-            temp['file_name'] = row[1]
-            temp['time'] = row[2]
-            temp['type'] = row[3]
-            data_list.append(temp)
+        if self._cursor.rowcount > 0:
+            data_list = []
+            result = self._cursor.fetchall()
+            for row in result:
+                temp = dict()
+                temp['id'] = row[0]
+                temp['file_name'] = row[1]
+                temp['time'] = row[2]
+                temp['type'] = row[3]
+                data_list.append(temp)
 
-        self._database.commit()
+            self._database.commit()
 
-        pack_data_list = dict()
-        pack_data_list['list'] = data_list
-        return self._get_json_payload(pack_data_list)
+            pack_data_list = dict()
+            pack_data_list['list'] = data_list
+            return self._get_json_payload(data=pack_data_list)
+        else:
+            return self._get_json_payload(path="", status=-2, message="not found in database")
 
 
     def get_file_path_with_id(self, file_id):
@@ -291,27 +303,34 @@ class DatabaseHandler:
         sql_str = self._sql.get_file_path_with_id_str(file_id)
         self._send_sql_cmd(sql_str)
 
-        result = self._cursor.fetchall()
+        if self._cursor.rowcount > 0:
+            result = self._cursor.fetchall()
 
-        return_path = result[0][0] + "/"
-        return_path += result[0][1]
+            return_path = result[0][0] + "/"
+            return_path += result[0][1]
 
-        self._database.commit()
+            self._database.commit()
+            return self._get_json_payload(path=return_path)
+        else:
+            return self._get_json_payload(path="", status=-2, message="not found in database")
 
-        return return_path
-
-    def get_image_thumbnail(self,image_id):
+    def get_image_thumbnail(self, image_id):
         """ Return image thumbnail with id """
         sql_str = self._sql.get_image_thumbnail_str(image_id)
         self._send_sql_cmd(sql_str)
 
-        result = self._cursor.fetchall()
-
-        user_name = result[0][0]
-
-        thumbnail_path = self.thumbnail_path+"/"
-        thumbnail_path += user_name
-        thumbnail_path += "/"
-        thumbnail_path += str(image_id)
-        thumbnail_path += ".jpg"
-        return thumbnail_path
+        # 有抓到東西
+        if self._cursor.rowcount > 0:
+            result = self._cursor.fetchall()
+            user_name = result[0][0]
+            file_type = result[0][1]
+            if file_type is not 'image':
+                return self._get_json_payload(path="", status=-1, message="there is no thumbnail for this type")
+            thumbnail_path = self._thumbnail_path + "/"
+            thumbnail_path += user_name
+            thumbnail_path += "/"
+            thumbnail_path += str(image_id)
+            thumbnail_path += ".jpg"
+            return self._get_json_payload(path=thumbnail_path)
+        else:
+            return self._get_json_payload(path="", status=-2, message="not found in database")

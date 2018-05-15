@@ -7,13 +7,14 @@ if __name__ == "__main__":
 
     dd = database_handler.DatabaseHandler()
 
-    # #第一次進來
-    # dd.clear_all()
-    # dd.initial_database_handler("/Users/Terry/Desktop/terry_dir", "terry")
+    # FIXME : 目前initial,update都是回假的
 
-    # dd.initial_database_handler("/Users/Terry/Desktop/terry_dir/img", "terry")
+    # #第一次進來
+    dd.clear_all()
+    print(dd.initial_database_handler("/Users/Terry/Desktop/terry_dir", "terry"))
+
     # #要更新加入的新路徑或檔案 # input folder id, file_name
-    # dd.update_database_handler("/Users/Terry/Desktop/terry_dir/ncs.jpg", "terry")
+    print(dd.update_database_handler("/Users/Terry/Desktop/terry_dir/ncs.jpg", "terry"))
 
     # #取得某個user的type table json
     # print(dd.get_user_type_table('terry', 'image'))
@@ -25,7 +26,7 @@ if __name__ == "__main__":
     # print(dd.get_files_under_folder("/Users/Terry/Desktop/terry_dir"))
 
     # #get thumbnail can only get image's thumbnail
-    print(dd.get_image_thumbnail(3))
+    # print(dd.get_image_thumbnail(23))
 
     print("--- Done ! cost : %s seconds ---" % (time.time() - START_TIME))
 

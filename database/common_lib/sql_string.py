@@ -309,7 +309,7 @@ class SqlString:
 
     def get_image_thumbnail_str(self, summary_id):
         """ Return file's path with id """
-        sql_str = "SELECT user FROM summary WHERE id="
+        sql_str = "SELECT user,type FROM summary WHERE id="
         sql_str += str(summary_id)
         sql_str += ";"
         return sql_str
