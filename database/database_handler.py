@@ -324,7 +324,7 @@ class DatabaseHandler:
 
     def delete_file_with_id(self, file_id):
         """ Delete file with id """
-        sql_str = self._sql.get_user_type_by_summaryid_str(file_id)
+        sql_str = self._sql.get_info_by_summaryid_str(file_id)
         self._send_sql_cmd(sql_str)
 
         # got thing
@@ -345,9 +345,9 @@ class DatabaseHandler:
         else:
             return self._get_json_payload(status=-2000, message="not found in database")
 
-    def update_file_with_file_path_id(self, file_path, file_id):
+    def rename_file_with_id(self, new_nickname, file_id):
         """ Update file in database with new file_path and id """
-        sql_str = self._sql.get_user_type_by_summaryid_str(file_id)
+        sql_str = self._sql.get_info_by_summaryid_str(file_id)
         self._send_sql_cmd(sql_str)
 
         # got thing
@@ -359,10 +359,8 @@ class DatabaseHandler:
             user_table = user_name + '_'
             user_table += file_type
 
-            path, file = os.path.split(file_path)
-
-            update_summary_sql_str, update_type_sql_str = self._sql.get_update_file_table_str(path, file, file_id,
-                                                                                              user_name)
+            update_summary_sql_str, update_type_sql_str = self._sql.get_update_file_table_str(new_nickname,
+                                                                                              user_name, file_id)
             self._send_sql_cmd(update_summary_sql_str)
             self._send_sql_cmd(update_type_sql_str)
 
@@ -372,7 +370,7 @@ class DatabaseHandler:
 
     def get_image_thumbnail(self, image_id):
         """ Return image thumbnail with id """
-        sql_str = self._sql.get_user_type_by_summaryid_str(image_id)
+        sql_str = self._sql.get_info_by_summaryid_str(image_id)
         self._send_sql_cmd(sql_str)
 
         # got thing

@@ -274,15 +274,19 @@ class SqlString:
         sql_str += '\';'
         return sql_str
 
-    def get_update_file_table_str(self, path, file,summary_id, user_name):
+    def get_update_file_table_str(self, file_name, user_name,summary_id):
         """ Return update summary & type talbe str """
-        filename, file_extension = os.path.splitext(file)
+
+        filename, file_extension = os.path.splitext(file_name)
 
         file_extension = file_extension.strip('.')
 
-        c_time = os.stat(path + "/" + file).st_ctime
-        m_time = os.stat(path + "/" + file).st_mtime
-        a_time = os.stat(path + "/" + file).st_atime
+        nas_user_path = self._home_path + "/"
+        nas_user_path += str(user_name)
+
+        c_time = os.stat(nas_user_path + "/" + file_name).st_ctime
+        m_time = os.stat(nas_user_path + "/" + file_name).st_mtime
+        a_time = os.stat(nas_user_path + "/" + file_name).st_atime
 
         summary_sql = "UPDATE summary SET type=\""
 
@@ -297,11 +301,9 @@ class SqlString:
         summary_sql += ",a_time="
         summary_sql += str(a_time)
         summary_sql += ",size=\""
-        summary_sql += self._convert_size(os.stat(path + "/" + file).st_size)
-        summary_sql += "\",name=\""
-        summary_sql += file
-        summary_sql += "\",path=\""
-        summary_sql += path
+        summary_sql += self._convert_size(os.stat(nas_user_path + "/" + file_name).st_size)
+        summary_sql += "\",nickname=\""
+        summary_sql += file_name
         summary_sql += "\" WHERE id="
         summary_sql += str(summary_id)
         summary_sql += ";"
@@ -311,7 +313,7 @@ class SqlString:
             # Set set thumbnail
 
             ## FIXME
-            image = Image.open(path + "/" + file)  # load an image through PIL's Image object
+            image = Image.open(nas_user_path + "/" + file_name)  # load an image through PIL's Image object
             exif_data = self._image_info.get_exif_data(image)
             lat, lon = self._image_info.get_lat_lon(exif_data)
             time = self._image_info.get_date_taken(image)
@@ -325,11 +327,6 @@ class SqlString:
                 lon = 'NULL'
             if city is None:
                 city = 'NULL'
-            ## FIXME
-            # lat="NULL"
-            # lon="NULL"
-            # city="NULL"
-            # time = "NULL"
 
             type_sql += "UPDATE "
             type_sql += user_name
@@ -348,7 +345,7 @@ class SqlString:
             type_sql += ";"
         return summary_sql, type_sql
 
-    def get_user_type_by_summaryid_str(self, summary_id):
+    def get_info_by_summaryid_str(self, summary_id):
         """ Return file's user,type with id """
         sql_str = "SELECT user,type FROM summary WHERE id="
         sql_str += str(summary_id)
