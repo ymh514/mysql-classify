@@ -5,28 +5,37 @@ import os
 if __name__ == "__main__":
     START_TIME = time.time()
 
-    dd = database_handler.DatabaseHandler()
+    dd = database_handler.DatabaseHandler("/home/terry/Desktop/Nas/new_nas_env")
 
-    # FIXME : 目前initial,update都是回假的
+    # FIXME : update now retrun fake
 
-    # #第一次進來
-    dd.clear_all()
-    print(dd.initial_database_handler("/Users/Terry/Desktop/terry_dir", "terry"))
 
-    # #要更新加入的新路徑或檔案 # input folder id, file_name
-    print(dd.update_database_handler("/Users/Terry/Desktop/terry_dir/ncs.jpg", "terry"))
+    """
+        make sure use check_nickename_in_database before update_database_handler
+    """
 
-    # #取得某個user的type table json
+
+    #dd.clear_all()
+
+    # check exist
+    # print(dd.check_nickname_in_database('1.jpg'))
+    if dd.check_nickname_in_database('5.jpg') == 0:
+        print(dd.update_database_handler("5.jpg", "terry","yx3111002030","/somewhere/img","auto","IMG_20180516_181224.jpg"))
+
+
+    # # Input 'user','type' get table
     # print(dd.get_user_type_table('terry', 'image'))
 
-    # #put id get file real path
-    # print(dd.get_file_path_with_id(20))
+    # # Input 'id' get nas_path+file
+    # print(dd.get_file_path_with_id(1))
 
-    # #取得某路徑那層的所有file & folder
-    # print(dd.get_files_under_folder("/Users/Terry/Desktop/terry_dir"))
+    # # Input 'nas_path' get all file under the path : but it seems like useless cause all under one directory
+    # print(dd.get_files_under_folder("/home/terry/Desktop/Nas/new_nas_env/terry"))
 
-    # #get thumbnail can only get image's thumbnail
-    # print(dd.get_image_thumbnail(23))
+    # #Input 'id' get thumbnail path
+    # print(dd.get_image_thumbnail(1))
+
+    #print(dd.delete_file_with_id(95))
 
     print("--- Done ! cost : %s seconds ---" % (time.time() - START_TIME))
 

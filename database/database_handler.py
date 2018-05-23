@@ -1,5 +1,11 @@
 import json
 import os
+import subprocess
+import sqlite3
+import time
+import shutil
+
+from threading import Thread
 
 import pymysql
 from PIL import Image, ExifTags
@@ -12,16 +18,22 @@ EXIST_DEBUG_FLAG = 1
 class DatabaseHandler:
     """ Database handler only new once """
 
-    def __init__(self):
+    def __init__(self, home_path):
         """ Initial Class """
 
         self._database = pymysql.connect(
-            "localhost", "root", "12345678", "mydatabase", charset="utf8")
+            "localhost", "root", "", "mydatabase", charset="utf8")
         self._cursor = self._database.cursor()
 
-        self._sql = sql_string.SqlString()
+        self._sql = sql_string.SqlString(home_path)
         self._dict = dictionary.Dictionary()
-        self._thumbnail_path = ""
+        tmp_path = home_path + "/mysql_resize"
+        # check dir
+        if os.path.exists(tmp_path):
+            if not os.path.isdir(tmp_path):
+                os.mkdir(tmp_path)
+        self._thumbnail_path = tmp_path
+        self._face_ai_path = '/home/terry/Desktop/Nas/face/qimgserver'
 
     def _send_sql_cmd(self, sql_str):
         """ Used to Send SQL Command """
@@ -34,9 +46,6 @@ class DatabaseHandler:
             print(sql_str)
             print('-----')
 
-        else:
-            self._database.commit()
-
     def clear_all(self):
         """ Reset database & Create summary & users table """
         # Reset database
@@ -45,6 +54,12 @@ class DatabaseHandler:
         self._send_sql_cmd(create_str)
         self._database.select_db("mydatabase")
 
+        # clear thumbnail path
+        try:
+            shutil.rmtree(self._thumbnail_path)
+            os.mkdir(self._thumbnail_path)
+        except:
+            print("not found thumbnail path")
         # Create summary table
         sql_str = self._sql.get_create_summary_table_str()
         self._send_sql_cmd(sql_str)
@@ -72,119 +87,110 @@ class DatabaseHandler:
 
     def _insert_folder_to_tables(self, path, folder, user_name):
         """ Insert folder to tables """
+        # not use??
         insert_summary_sql_str, insert_type_sql_str = \
             self._sql.get_insert_folder_str(path, folder, user_name)
 
         self._send_sql_cmd(insert_summary_sql_str)
         self._send_sql_cmd(insert_type_sql_str)
 
-    def _set_thumbnail(self, path, file, user_name):
+    def _set_thumbnail(self, file, user_name):
         """ Generate thumbnail """
         #  Generate thumbnail for image
-        get_summary_id_sql = "SELECT id,type FROM summary WHERE name=\""
+        get_summary_id_sql = "SELECT id,type,nas_path FROM summary WHERE nickname=\""
         get_summary_id_sql += file
-        get_summary_id_sql += "\" AND path=\""
-        get_summary_id_sql += path
         get_summary_id_sql += "\";"
 
         self._send_sql_cmd(get_summary_id_sql)
 
-        summary_id = 0
-        file_type = ""
-        result = self._cursor.fetchall()
-        for row in result:
-            # row[1] = user
-            summary_id = row[0]
-            file_type = row[1]
-        self._database.commit()
+        if self._cursor.rowcount > 0:
+            result = self._cursor.fetchall()
+            for row in result:
+                # row[1] = user
+                summary_id = row[0]
+                file_type = row[1]
+                nas_path = row[2]
+            self._database.commit()
 
-        if file_type == 'image':
-            full_path = os.path.join(path, file)
+            if file_type == 'image':
+                ######## face classify
+                self.face_classify(nas_path, file, user_name)
+                # try:
+                # face_thread = Thread(target=self.face_classify,args=(path,file,user_name))
+                # face_thread.start()
+                # face_thread.join()
+                # except:
+                # print("Error : unable thread")
 
-            image = Image.open(full_path)
-            # prevent rotation
-            try:
-                for orientation in ExifTags.TAGS.keys():
-                    if ExifTags.TAGS[orientation] == 'Orientation':
-                        break
-                exif = dict(image._getexif().items())
+                full_path = os.path.join(nas_path, file)
+                image = Image.open(full_path)
 
-                if exif[orientation] == 3:
-                    image = image.rotate(180, expand=True)
-                elif exif[orientation] == 6:
-                    image = image.rotate(270, expand=True)
-                elif exif[orientation] == 8:
-                    image = image.rotate(90, expand=True)
+                # prevent rotation
+                try:
+                    hasOrientation = False
+                    for orientation in ExifTags.TAGS.keys():
+                        if ExifTags.TAGS[orientation] == 'Orientation':
+                            hasOrientation = True
+                            break
+                    if hasOrientation:
+                        try:
+                            exif = image._getexif()
+                        except Exception:
+                            exif = None
 
-            except (AttributeError, KeyError, IndexError):
-                # cases: image don't have getexif
-                pass
+                        if exif:
+                            if exif[orientation] == 3:
+                                image = image.rotate(180, expand=True)
+                            elif exif[orientation] == 6:
+                                image = image.rotate(270, expand=True)
+                            elif exif[orientation] == 8:
+                                image = image.rotate(90, expand=True)
 
-            image.thumbnail((64, 64))
-            save_str = self._thumbnail_path + "/"
-            save_str += user_name
+                except (AttributeError, KeyError, IndexError):
+                    # cases: image don't have getexif
+                    pass
+                image.thumbnail((256, 256))
+                save_str = self._thumbnail_path + "/"
+                save_str += user_name
 
-            # check dir
-            if not os.path.isdir(save_str):
-                os.mkdir(save_str)
+                # check dir
+                if not os.path.isdir(save_str):
+                    os.mkdir(save_str)
 
-            save_str += "/"
-            save_str += str(summary_id)
-            save_str += ".jpg"
-            image.save(save_str)
-            image.close()
+                save_str += "/"
+                save_str += str(summary_id)
+                save_str += ".jpg"
+                image.save(save_str)
 
-    def _insert_file_to_tables(self, path, file, user_name):
-        """ Insert File to tables """
+                image.close()
+        else:
+            pass
 
-        # 先確定是否有在裡面
-        check_sql = self._sql.get_check_file_already_exist_str(path, file, user_name)
-        self._send_sql_cmd(check_sql)
-        summary_id = 0
-        result = self._cursor.fetchall()
-        for row in result:
-            # row[1] = user
-            summary_id = row[0]
-        self._database.commit()
-
-        if summary_id == 0:
-            # not exist
+    def _insert_file_to_tables(self, file_name, user_name, device_id, source_path, upload_mode, source_name=None):
+        """ Insert File to tables, must be new in """
+        if source_name is None:
             insert_summary_sql_str, insert_type_sql_str = \
-                self._sql.get_insert_tables_str(path, file, user_name)
-
-            self._send_sql_cmd(insert_summary_sql_str)
-            self._send_sql_cmd(insert_type_sql_str)
+                self._sql.get_insert_tables_str(file_name, user_name, device_id, source_path, upload_mode)
         else:
-            # already exist
-            update_summary_sql_str, update_type_sql_str = self._sql.get_update_file_table_str(path, file, user_name)
-            self._send_sql_cmd(update_summary_sql_str)
-            self._send_sql_cmd(update_type_sql_str)
+            insert_summary_sql_str, insert_type_sql_str = \
+                self._sql.get_insert_tables_str(file_name, user_name, device_id, source_path, upload_mode, source_name)
 
-        self._set_thumbnail(path, file, user_name)
+        self._send_sql_cmd(insert_summary_sql_str)
+        self._send_sql_cmd(insert_type_sql_str)
 
-    def _check_path(self, path_or_file, user_name):
+        self._set_thumbnail(file_name, user_name)
+
+    def _check_path(self, file_name, user_name, device_id, source_path, upload_mode, source_name=None):
         """ When initial search path layer by layer to find files & add """
-        if os.path.isdir(path_or_file):
-            # input is a path
-            path = path_or_file
-            file_list = os.listdir(path)
-            for file in file_list:
-                full_path = os.path.join(path, file)
-                if os.path.isdir(full_path):
-                    folder = file
-                    # call insert
-                    self._insert_folder_to_tables(path, folder, user_name)
-                    self._check_path(full_path, user_name)
-                elif os.path.isfile(full_path):
-                    if not file.startswith('.'):
-                        # '.' start file don't do
-                        self._insert_file_to_tables(path, file, user_name)
-        else:
-            # input is a file
-            path, file = os.path.split(path_or_file)
-            if not file.startswith('.'):
-                # '.' start file don't do
-                self._insert_file_to_tables(path, file, user_name)
+
+        # input is a file
+        # path, file = os.path.split(path_or_file)
+        if not file_name.startswith('.'):
+            # '.' start file don't do
+            if source_name is None:
+                self._insert_file_to_tables(file_name, user_name, device_id, source_path, upload_mode)
+            else:
+                self._insert_file_to_tables(file_name, user_name, device_id, source_path, upload_mode, source_name)
 
     def _get_json_payload(self, path=None, data=None, status=0, message='sucess'):
         """ Form defined format json payload """
@@ -197,40 +203,31 @@ class DatabaseHandler:
             root['path'] = path
         return json.dumps(root)
 
-    def initial_database_handler(self, path, user_name):
-        """ Initial database handler : first time search path & create table """
-        upper_path = os.path.abspath(os.path.join(os.path.dirname(path), '.'))
-        upper_path += "/mysql_resize"
-        # check dir
-        if not os.path.isdir(upper_path):
-            os.mkdir(upper_path)
-        self._thumbnail_path = upper_path
-
-        # First user
-        self._new_user(user_name)
-
-        self._check_path(path, user_name)
-        return self._get_json_payload()
-
-    def update_database_handler(self, path, user_name):
+    def update_database_handler(self, file_name, user_name, device_id, source_path, upload_mode, source_name=None):
         """ Update new path or file """
         sql_str = self._sql.get_select_user_table_str()
         self._send_sql_cmd(sql_str)
 
-        user_dict = []
-        result = self._cursor.fetchall()
-        for row in result:
-            # row[1] = user
-            user_dict.append(row[1])
+        if self._cursor.rowcount > 0:
+            user_dict = []
+            result = self._cursor.fetchall()
+            for row in result:
+                # row[1] = user
+                user_dict.append(row[1])
 
-        self._database.commit()
+            self._database.commit()
 
-        # inside or not
-        if user_name not in user_dict:
+            # inside or not
+            if user_name not in user_dict:
+                self._new_user(user_name)
+        else:
             self._new_user(user_name)
 
         # check path and insert files
-        self._check_path(path, user_name)
+        if source_name is None:
+            self._check_path(file_name, user_name, device_id, source_path, upload_mode)
+        else:
+            self._check_path(file_name, user_name, device_id, source_path, upload_mode, source_name)
         return self._get_json_payload()
 
     def get_user_type_table(self, user_name, file_type):
@@ -239,15 +236,27 @@ class DatabaseHandler:
         self._send_sql_cmd(sql_str)
 
         if self._cursor.rowcount > 0:
-
+            # summary.id,type,nickname,nas_path,m_time,size,device_id,upload_mode
             data_list = []
             result = self._cursor.fetchall()
             for row in result:
                 temp = dict()
                 temp['id'] = row[0]
-                temp['file_name'] = row[1]
-                temp['time'] = row[2]
-                temp['type'] = file_type
+                temp['type'] = row[1]
+                temp['nickname'] = row[2]
+                temp['name_path'] = row[3]
+                temp['m_time'] = row[4]
+                temp['size'] = row[5]
+                temp['device_id'] = row[6]
+                temp['upload_mode'] = row[7]
+
+                # # image return face_id
+                if file_type == 'image':
+                    if row[8] is None:
+                        temp['face_id'] = -1
+                    else:
+                        temp['face_id'] = row[8]
+
                 data_list.append(temp)
 
             self._database.commit()
@@ -256,7 +265,7 @@ class DatabaseHandler:
             pack_data_list['list'] = data_list
             return self._get_json_payload(data=pack_data_list)
         else:
-            return self._get_json_payload(path="", status=-2, message="not found in database")
+            return self._get_json_payload(status=-2000, message="not found in database")
 
     def get_files_under_folder(self, folder_path):
         """ Return files under folder with id """
@@ -269,9 +278,13 @@ class DatabaseHandler:
             for row in result:
                 temp = dict()
                 temp['id'] = row[0]
-                temp['file_name'] = row[1]
-                temp['time'] = row[2]
-                temp['type'] = row[3]
+                temp['type'] = row[1]
+                temp['nickname'] = row[2]
+                temp['name_path'] = row[3]
+                temp['m_time'] = row[4]
+                temp['size'] = row[5]
+                temp['device_id'] = row[6]
+                temp['upload_mode'] = row[7]
                 data_list.append(temp)
 
             self._database.commit()
@@ -280,8 +293,7 @@ class DatabaseHandler:
             pack_data_list['list'] = data_list
             return self._get_json_payload(data=pack_data_list)
         else:
-            return self._get_json_payload(path="", status=-2, message="not found in database")
-
+            return self._get_json_payload(status=-2000, message="not found in database")
 
     def get_file_path_with_id(self, file_id):
         """ Return file's path with file id (summary table) """
@@ -297,20 +309,68 @@ class DatabaseHandler:
             self._database.commit()
             return self._get_json_payload(path=return_path)
         else:
-            return self._get_json_payload(path="", status=-2, message="not found in database")
+            return self._get_json_payload(status=-2000, message="not found in database")
 
-    def get_image_thumbnail(self, image_id):
-        """ Return image thumbnail with id """
-        sql_str = self._sql.get_image_thumbnail_str(image_id)
+    def delete_file_with_id(self, file_id):
+        """ Delete file with id """
+        sql_str = self._sql.get_user_type_by_summaryid_str(file_id)
         self._send_sql_cmd(sql_str)
 
-        # 有抓到東西
+        # got thing
         if self._cursor.rowcount > 0:
             result = self._cursor.fetchall()
             user_name = result[0][0]
             file_type = result[0][1]
-            if file_type is not 'image':
-                return self._get_json_payload(path="", status=-1, message="there is no thumbnail for this type")
+
+            user_table = user_name + '_'
+            user_table += file_type
+
+            delete_sql = self._sql.get_delete_summary_type_with_id_str(user_table, file_id)
+
+            self._send_sql_cmd(delete_sql)
+
+            # change
+            return self._get_json_payload()
+        else:
+            return self._get_json_payload(status=-2000, message="not found in database")
+
+    def update_file_with_file_path_id(self, file_path, file_id):
+        """ Update file in database with new file_path and id """
+        sql_str = self._sql.get_user_type_by_summaryid_str(file_id)
+        self._send_sql_cmd(sql_str)
+
+        # got thing
+        if self._cursor.rowcount > 0:
+            result = self._cursor.fetchall()
+            user_name = result[0][0]
+            file_type = result[0][1]
+
+            user_table = user_name + '_'
+            user_table += file_type
+
+            path, file = os.path.split(file_path)
+
+            update_summary_sql_str, update_type_sql_str = self._sql.get_update_file_table_str(path, file, file_id,
+                                                                                              user_name)
+            self._send_sql_cmd(update_summary_sql_str)
+            self._send_sql_cmd(update_type_sql_str)
+
+            return self._get_json_payload()
+        else:
+            return self._get_json_payload(status=-2000, message="not found in database")
+
+    def get_image_thumbnail(self, image_id):
+        """ Return image thumbnail with id """
+        sql_str = self._sql.get_user_type_by_summaryid_str(image_id)
+        self._send_sql_cmd(sql_str)
+
+        # got thing
+        if self._cursor.rowcount > 0:
+            result = self._cursor.fetchall()
+            user_name = result[0][0]
+            file_type = result[0][1]
+            if not file_type == "image":
+                return self._get_json_payload(status=-2000, message="there is no thumbnail for this type")
             thumbnail_path = self._thumbnail_path + "/"
             thumbnail_path += user_name
             thumbnail_path += "/"
@@ -318,4 +378,66 @@ class DatabaseHandler:
             thumbnail_path += ".jpg"
             return self._get_json_payload(path=thumbnail_path)
         else:
-            return self._get_json_payload(path="", status=-2, message="not found in database")
+            return self._get_json_payload(status=-2000, message="not found in database")
+
+    def face_classify(self, path, file, user_name):
+
+        """ set img """
+        file_path = path + "/"
+        file_path += file
+
+        # TODO : path
+        add_cmd = self._face_ai_path + '/'
+        add_cmd += 'qimg add '
+        add_cmd += file_path
+
+        p = subprocess.Popen([add_cmd, '-p'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        (stdoutput, erroutput) = p.communicate()
+
+        info_cmd = self._face_ai_path + '/'
+        info_cmd += 'qimg info '
+        info_cmd += file_path
+
+        get_id = '-1'
+        # fetch 10 times
+        for i in range(0, 5):
+            p2 = subprocess.Popen([info_cmd, '-p'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            (stdoutput2, erroutput) = p2.communicate()
+            getgetget = stdoutput2.decode("utf-8")
+
+            # if not number
+            try:
+                val = int(getgetget[0])
+                if val != -1:
+                    get_id = str(val)
+                    print("Found face : " + get_id)
+            except ValueError:
+                print("Not found wait 1 second !")
+
+            if get_id is not '-1':
+                break
+            # sleep 1 sec everytimes
+            time.sleep(1)
+
+        # update img table's id col
+        if get_id is not '-1':
+            print("---------- Found face id : " + get_id + " ----------")
+            type_sql = self._sql.get_face_id_update_str(file_path, user_name, get_id)
+            self._send_sql_cmd(type_sql)
+        else:
+            print('---------- Not found face id ----------')
+
+    def check_nickname_in_database(self, nickname):
+        """ Check nickname in database or not  """
+        # exist return -1
+        # not exist return 0
+
+        check_sql = "SELECT * FROM summary WHERE nickname=\""
+        check_sql += nickname
+        check_sql += "\";"
+
+        self._send_sql_cmd(check_sql)
+        if self._cursor.rowcount > 0:
+            return -1
+        else:
+            return 0

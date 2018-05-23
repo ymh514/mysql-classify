@@ -13,7 +13,10 @@ class ImageInfo:
     def get_exif_data(self, image):
         """Returns a dictionary from the exif data of an PIL Image item. Also converts the GPS Tags"""
         exif_data = {}
-        info = image._getexif()
+        try:
+            info = image._getexif()
+        except Exception:
+            info = None
         if info:
             for tag, value in info.items():
                 decoded = TAGS.get(tag, tag)
@@ -78,18 +81,27 @@ class ImageInfo:
 
     def get_date_taken(self, image):
         """ Return taken time with millisecond """
-        if image._getexif():
-            # 36867 = 0x9003 = DateTimeOriginal
+        try:
+            info = image._getexif()
+        except Exception:
+            info = None
 
-            d = datetime.strptime(image._getexif()[36867], "%Y:%m:%d %H:%M:%S").strftime('%s.%f')
-            # d_in_ms = int(float(d) * 1000)
-            # print(d_in_ms)
+        if info:
+            taken_time = self._get_minimum_creation_time(image._getexif())
+            d = datetime.strptime(taken_time, "%Y:%m:%d %H:%M:%S").strftime('%s.%f')
             return d
-            # print(image._getexif()[36867])
-            # dt_obj = datetime.strptime(image._getexif()[36867], '%Y:%m:%d %H:%M:%S')
-            # return dt_obj.timestamp()
         else:
             return None
+
+    def _get_minimum_creation_time(self,exif_data):
+        mtime = "?"
+        if 306 in exif_data and exif_data[306] < mtime:  # 306 = DateTime
+            mtime = exif_data[306]
+        if 36867 in exif_data and exif_data[36867] < mtime:  # 36867 = DateTimeOriginal
+            mtime = exif_data[36867]
+        if 36868 in exif_data and exif_data[36868] < mtime:  # 36868 = DateTimeDigitized
+            mtime = exif_data[36868]
+        return mtime
 
     def get_city_location(self,lat,lon):
         """ Return lat,long nearest city """
@@ -101,7 +113,7 @@ class ImageInfo:
 ################
 # Example ######
 ################
-# import googlemaps
+# import googlemapsget_exif_data
 # if __name__ == "__main__":
 #
 #     imageinfo = ImageInfo()
