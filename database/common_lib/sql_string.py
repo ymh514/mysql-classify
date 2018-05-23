@@ -209,7 +209,20 @@ class SqlString:
         if file_type == 'image':
             sql += ","
             sql += table_str
-            sql += ".face_id FROM summary INNER JOIN "
+            sql += ".latitude"
+            sql += ","
+            sql += table_str
+            sql += ".longitude"
+            sql += ","
+            sql += table_str
+            sql += ".city"
+            sql += ","
+            sql += table_str
+            sql += ".taken_time"
+            sql += ","
+            sql += table_str
+            sql += ".face_id"
+            sql += " FROM summary INNER JOIN "
         else:
             sql += " FROM summary INNER JOIN "
         sql += table_str

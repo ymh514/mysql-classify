@@ -203,8 +203,13 @@ class DatabaseHandler:
             root['path'] = path
         return json.dumps(root)
 
-    def update_database_handler(self, file_name, user_name, device_id, source_path, upload_mode, source_name=None):
+    def update_database_handler(self, nickname, user_name, device_id, source_path, upload_mode, source_name=None):
         """ Update new path or file """
+        exsist_flag = self._check_nickname_in_database(nickname)
+
+        if exsist_flag == -1:
+            return self._get_json_payload(status=-7,message='have same name in Nas')
+
         sql_str = self._sql.get_select_user_table_str()
         self._send_sql_cmd(sql_str)
 
@@ -225,16 +230,16 @@ class DatabaseHandler:
 
         # check path and insert files
         if source_name is None:
-            self._check_path(file_name, user_name, device_id, source_path, upload_mode)
+            self._check_path(nickname, user_name, device_id, source_path, upload_mode)
         else:
-            self._check_path(file_name, user_name, device_id, source_path, upload_mode, source_name)
+            self._check_path(nickname, user_name, device_id, source_path, upload_mode, source_name)
         return self._get_json_payload()
 
     def get_user_type_table(self, user_name, file_type):
         """ Return user's (type) table with id """
         sql_str = self._sql.get_user_file_type_str(user_name, file_type)
         self._send_sql_cmd(sql_str)
-
+        print(sql_str)
         if self._cursor.rowcount > 0:
             # summary.id,type,nickname,nas_path,m_time,size,device_id,upload_mode
             data_list = []
@@ -244,7 +249,7 @@ class DatabaseHandler:
                 temp['id'] = row[0]
                 temp['type'] = row[1]
                 temp['nickname'] = row[2]
-                temp['name_path'] = row[3]
+                temp['nas_path'] = row[3]
                 temp['m_time'] = row[4]
                 temp['size'] = row[5]
                 temp['device_id'] = row[6]
@@ -252,11 +257,17 @@ class DatabaseHandler:
 
                 # # image return face_id
                 if file_type == 'image':
-                    if row[8] is None:
-                        temp['face_id'] = -1
+                    image_info = dict()
+                    image_info['latitude'] = row[8]
+                    image_info['longitude'] = row[9]
+                    image_info['city'] = row[10]
+                    image_info['taken_time'] = row[11]
+                    if row[12] is None:
+                        image_info['face_id'] = -1
                     else:
-                        temp['face_id'] = row[8]
+                        image_info['face_id'] = row[12]
 
+                    temp['image_info'] = image_info
                 data_list.append(temp)
 
             self._database.commit()
@@ -280,7 +291,7 @@ class DatabaseHandler:
                 temp['id'] = row[0]
                 temp['type'] = row[1]
                 temp['nickname'] = row[2]
-                temp['name_path'] = row[3]
+                temp['nas_path'] = row[3]
                 temp['m_time'] = row[4]
                 temp['size'] = row[5]
                 temp['device_id'] = row[6]
@@ -427,8 +438,8 @@ class DatabaseHandler:
         else:
             print('---------- Not found face id ----------')
 
-    def check_nickname_in_database(self, nickname):
-        """ Check nickname in database or not  """
+    def _check_nickname_in_database(self, nickname):
+        """ Private : Check nickname in database or not  """
         # exist return -1
         # not exist return 0
 
@@ -441,3 +452,19 @@ class DatabaseHandler:
             return -1
         else:
             return 0
+
+
+    def check_nickname_in_database(self, nickname):
+        """ Check nickname in database or not  """
+        # exist return -1
+        # not exist return 0
+
+        check_sql = "SELECT * FROM summary WHERE nickname=\""
+        check_sql += nickname
+        check_sql += "\";"
+
+        self._send_sql_cmd(check_sql)
+        if self._cursor.rowcount > 0:
+            return self._get_json_payload(status=-7,message='have same name in Nas')
+        else:
+            return self._get_json_payload()
