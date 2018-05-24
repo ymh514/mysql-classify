@@ -248,7 +248,7 @@ class DatabaseHandler:
                 temp = dict()
                 temp['id'] = row[0]
                 temp['type'] = row[1]
-                temp['nickname'] = row[2]
+                temp['file_name'] = row[2]
                 temp['nas_path'] = row[3]
                 temp['m_time'] = row[4]
                 temp['size'] = row[5]
@@ -290,7 +290,7 @@ class DatabaseHandler:
                 temp = dict()
                 temp['id'] = row[0]
                 temp['type'] = row[1]
-                temp['nickname'] = row[2]
+                temp['file_name'] = row[2]
                 temp['nas_path'] = row[3]
                 temp['m_time'] = row[4]
                 temp['size'] = row[5]
@@ -339,6 +339,19 @@ class DatabaseHandler:
             delete_sql = self._sql.get_delete_summary_type_with_id_str(user_table, file_id)
 
             self._send_sql_cmd(delete_sql)
+
+            #delete thumbnail
+            thumbnail_path = self._thumbnail_path + '/'
+            thumbnail_path += user_name
+            thumbnail_path += '/'
+            thumbnail_path += str(file_id)
+            thumbnail_path += '.jpg'
+
+            print(thumbnail_path)
+            try:
+                os.remove(thumbnail_path)
+            except:
+                pass
 
             # change
             return self._get_json_payload()
