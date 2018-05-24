@@ -41,10 +41,11 @@ class DatabaseHandler:
             self._cursor.execute(sql_str)
             self._database.commit()
         except Exception as e:
-            print('-----')
-            print(e)
-            print(sql_str)
-            print('-----')
+            pass
+            # print('-----')
+            # print(e)
+            # print(sql_str)
+            # print('-----')
 
     def clear_all(self):
         """ Reset database & Create summary & users table """
@@ -59,7 +60,8 @@ class DatabaseHandler:
             shutil.rmtree(self._thumbnail_path)
             os.mkdir(self._thumbnail_path)
         except:
-            print("not found thumbnail path")
+            pass
+            # print("not found thumbnail path")
         # Create summary table
         sql_str = self._sql.get_create_summary_table_str()
         self._send_sql_cmd(sql_str)
@@ -239,7 +241,7 @@ class DatabaseHandler:
         """ Return user's (type) table with id """
         sql_str = self._sql.get_user_file_type_str(user_name, file_type)
         self._send_sql_cmd(sql_str)
-        print(sql_str)
+
         if self._cursor.rowcount > 0:
             # summary.id,type,nickname,nas_path,m_time,size,device_id,upload_mode
             data_list = []
@@ -347,7 +349,6 @@ class DatabaseHandler:
             thumbnail_path += str(file_id)
             thumbnail_path += '.jpg'
 
-            print(thumbnail_path)
             try:
                 os.remove(thumbnail_path)
             except:
@@ -432,9 +433,10 @@ class DatabaseHandler:
                 val = int(getgetget[0])
                 if val != -1:
                     get_id = str(val)
-                    print("Found face : " + get_id)
+                    # print("Found face : " + get_id)
             except ValueError:
-                print("Not found wait 1 second !")
+                pass
+                # print("Not found wait 1 second !")
 
             if get_id is not '-1':
                 break
@@ -443,11 +445,12 @@ class DatabaseHandler:
 
         # update img table's id col
         if get_id is not '-1':
-            print("---------- Found face id : " + get_id + " ----------")
+            # print("---------- Found face id : " + get_id + " ----------")
             type_sql = self._sql.get_face_id_update_str(file_path, user_name, get_id)
             self._send_sql_cmd(type_sql)
         else:
-            print('---------- Not found face id ----------')
+            pass
+            # print('---------- Not found face id ----------')
 
     def _check_nickname_in_database(self, nickname):
         """ Private : Check nickname in database or not  """
