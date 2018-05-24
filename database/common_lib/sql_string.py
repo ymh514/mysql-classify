@@ -80,8 +80,7 @@ class SqlString:
 
         file_extension = file_extension.strip('.')
 
-        nas_user_path = self._home_path + "/"
-        nas_user_path += str(user_name)
+        nas_user_path = self._home_path
 
         c_time = os.stat(nas_user_path + "/" + file_name).st_ctime
         m_time = os.stat(nas_user_path + "/" + file_name).st_mtime
@@ -132,6 +131,8 @@ class SqlString:
 
         if file_type == 'image':
             # Set set thumbnail
+            print(" nas_u : "+nas_user_path)
+            print(" uu : "+file_name)
 
             image = Image.open(nas_user_path + "/" + file_name)  # load an image through PIL's Image object
             exif_data = self._image_info.get_exif_data(image)
@@ -281,8 +282,7 @@ class SqlString:
 
         file_extension = file_extension.strip('.')
 
-        nas_user_path = self._home_path + "/"
-        nas_user_path += str(user_name)
+        nas_user_path = self._home_path
 
         c_time = os.stat(nas_user_path + "/" + file_name).st_ctime
         m_time = os.stat(nas_user_path + "/" + file_name).st_mtime
@@ -345,11 +345,11 @@ class SqlString:
             type_sql += ";"
         return summary_sql, type_sql
 
-    def get_info_by_summaryid_str(self, summary_id):
+    def get_info_by_nickname_str(self, nickname):
         """ Return file's user,type with id """
-        sql_str = "SELECT user,type FROM summary WHERE id="
-        sql_str += str(summary_id)
-        sql_str += ";"
+        sql_str = "SELECT id,user,type FROM summary WHERE nickname=\""
+        sql_str += nickname
+        sql_str += "\";"
         return sql_str
 
     def get_initial_str(self):

@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b1142dc-87b0-4f8d-a915-0e0ba2c6a70a" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/test_pyinotify.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/common_lib/sql_string.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/common_lib/sql_string.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/database_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/database_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/pyinotify.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -19,16 +21,19 @@
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="396">
-              <caret line="39" column="25" selection-start-line="39" selection-start-column="25" selection-end-line="39" selection-end-column="25" />
+              <caret line="39" column="23" selection-start-line="39" selection-start-column="23" selection-end-line="39" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#37#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="database_handler.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="database_handler.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/database/database_handler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="332">
-              <caret line="371" column="46" lean-forward="true" selection-start-line="371" selection-start-column="46" selection-end-line="371" selection-end-column="46" />
+            <state relative-caret-position="349">
+              <caret line="368" column="78" lean-forward="true" selection-start-line="368" selection-start-column="78" selection-end-line="368" selection-end-column="78" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -36,11 +41,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sql_string.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="test_pyinotify.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test_pyinotify.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="439">
+              <caret line="50" column="10" lean-forward="true" selection-start-line="50" selection-start-column="10" selection-end-line="50" selection-end-column="10" />
+              <folding>
+                <element signature="e#0#16#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sql_string.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/database/common_lib/sql_string.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="75" column="8" selection-start-line="75" selection-start-column="8" selection-end-line="75" selection-end-column="8" />
+            <state relative-caret-position="542">
+              <caret line="285" lean-forward="true" selection-start-line="285" selection-end-line="285" />
             </state>
           </provider>
         </entry>
@@ -56,8 +73,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>.</find>
-      <find>`</find>
       <find>user</find>
       <find>set_thumbnail</find>
       <find>file_extension</find>
@@ -74,7 +89,6 @@
       <find>b</find>
       <find>datetime</find>
       <find>print</find>
-      <find>get_update_file_table_str</find>
       <find>get_files_under_folder</find>
       <find>get_files_under_folder_str</find>
       <find>thumbnail</find>
@@ -84,8 +98,11 @@
       <find>clear_all</find>
       <find>get_file_path_with_id</find>
       <find>get_user_type_by_summaryid_str</find>
-      <find>get_info_by_summaryid_str</find>
       <find>not found thumbnail path</find>
+      <find>get_update_file_table_str</find>
+      <find>delete</find>
+      <find>rename</find>
+      <find>get_info_by_summaryid_str</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -118,9 +135,13 @@
         <option value="$PROJECT_DIR$/database/common_lib/city_location.py" />
         <option value="$USER_HOME$/pythone_test.py" />
         <option value="$PROJECT_DIR$/database/common_lib/image_info.py" />
-        <option value="$PROJECT_DIR$/database/database_handler.py" />
-        <option value="$PROJECT_DIR$/database/common_lib/sql_string.py" />
         <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/database/watchdog.py" />
+        <option value="$PROJECT_DIR$/database/pyinotify.py" />
+        <option value="$PROJECT_DIR$/database/test_pyinotify.py" />
+        <option value="$PROJECT_DIR$/database/common_lib/sql_string.py" />
+        <option value="$PROJECT_DIR$/database/database_handler.py" />
+        <option value="$PROJECT_DIR$/test_pyinotify.py" />
       </list>
     </option>
   </component>
@@ -143,6 +164,17 @@
               <item name="mysql_database_handler" type="b2602c69:ProjectViewProjectNode" />
               <item name="mysql_database_handler" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="mysql_database_handler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mysql_database_handler" type="462c0819:PsiDirectoryNode" />
+              <item name="database" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mysql_database_handler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mysql_database_handler" type="462c0819:PsiDirectoryNode" />
+              <item name="database" type="462c0819:PsiDirectoryNode" />
+              <item name="common_lib" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -155,6 +187,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/database/common_lib" />
       <recent name="$PROJECT_DIR$/database" />
     </key>
@@ -171,7 +204,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.test (3)">
+  <component name="RunManager" selected="Python.pyinotify">
     <configuration name="database_handler" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="mysql_classify" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -190,7 +223,7 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="pythone_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="pyinotify" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="mysql_classify" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -198,29 +231,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$USER_HOME$" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$USER_HOME$/pythone_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="sql_string" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="mysql_classify" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/database" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sql_string.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_pyinotify.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -262,20 +277,38 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
+    <configuration name="watchdog" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="mysql_classify" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/database" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/database/watchdog.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
     <list>
       <item itemvalue="Python.test (1)" />
       <item itemvalue="Python.test (3)" />
-      <item itemvalue="Python.sql_string" />
       <item itemvalue="Python.database_handler" />
-      <item itemvalue="Python.pythone_test" />
+      <item itemvalue="Python.pyinotify" />
+      <item itemvalue="Python.watchdog" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.pyinotify" />
+        <item itemvalue="Python.watchdog" />
         <item itemvalue="Python.test (3)" />
         <item itemvalue="Python.test (1)" />
         <item itemvalue="Python.database_handler" />
-        <item itemvalue="Python.pythone_test" />
-        <item itemvalue="Python.sql_string" />
       </list>
     </recent_temporary>
   </component>
@@ -298,12 +331,12 @@
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15789473" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.24324325" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5005721" side_tool="true" weight="0.29142186" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4994279" weight="0.34900117" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32902467" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.29142186" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" sideWeight="0.4994279" visible="true" weight="0.29142186" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.19501466" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
@@ -345,15 +378,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1088">
-          <caret line="33" column="19" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/testpyinotify/TODO.txt" />
-    <entry file="file://$PROJECT_DIR$/testpyinotify/main.py" />
     <entry file="file://$PROJECT_DIR$/testpyinotify/TODO.md" />
     <entry file="file://$PROJECT_DIR$/TODO.md" />
     <entry file="file://$PROJECT_DIR$/database/database_handler.py">
@@ -386,7 +410,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
+    <entry file="file://$PROJECT_DIR$/test_pyinotify.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1088">
           <caret line="33" column="19" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="19" />
@@ -413,7 +437,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
+    <entry file="file://$PROJECT_DIR$/test_pyinotify.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1122">
           <caret line="33" column="19" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="19" />
@@ -438,7 +462,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
+    <entry file="file://$PROJECT_DIR$/test_pyinotify.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1088">
           <caret line="33" column="19" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="19" />
@@ -463,7 +487,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/google_api_geocodin.py" />
-    <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
+    <entry file="file://$PROJECT_DIR$/test_pyinotify.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="612">
           <caret line="19" column="39" lean-forward="true" selection-start-line="19" selection-start-column="39" selection-end-line="19" selection-end-column="39" />
@@ -487,13 +511,6 @@
     <entry file="file:///usr/local/Cellar/python3/3.6.2/Frameworks/Python.framework/Versions/3.6/lib/python3.6/csv.py" />
     <entry file="file://$USER_HOME$/pythone_test.py" />
     <entry file="file:///usr/local/Cellar/python3/3.6.2/Frameworks/Python.framework/Versions/3.6/lib/python3.6/_strptime.py" />
-    <entry file="file://$PROJECT_DIR$/database/pyinotify.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="26" selection-start-line="10" selection-start-column="26" selection-end-line="10" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/database/common_lib/image_info.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="113">
@@ -518,27 +535,64 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/database/common_lib/sql_string.py">
+    <entry file="file://$PROJECT_DIR$/database/watchdog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="75" column="8" selection-start-line="75" selection-start-column="8" selection-end-line="75" selection-end-column="8" />
+        <state relative-caret-position="72">
+          <caret line="4" column="41" lean-forward="true" selection-start-line="4" selection-start-column="41" selection-end-line="4" selection-end-column="41" />
+          <folding>
+            <element signature="e#1#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/tensorflow/lib/python3.5/site-packages/pyinotify.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="1848" column="8" selection-start-line="1848" selection-start-column="8" selection-end-line="1848" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2018.1/system/python_stubs/-380671164/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="5189" column="45" selection-start-line="5189" selection-start-column="17" selection-end-line="5189" selection-end-column="45" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="396">
-          <caret line="39" column="25" selection-start-line="39" selection-start-column="25" selection-end-line="39" selection-end-column="25" />
+          <caret line="39" column="23" selection-start-line="39" selection-start-column="23" selection-end-line="39" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#37#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/database/database_handler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="332">
-          <caret line="371" column="46" lean-forward="true" selection-start-line="371" selection-start-column="46" selection-end-line="371" selection-end-column="46" />
+        <state relative-caret-position="349">
+          <caret line="368" column="78" lean-forward="true" selection-start-line="368" selection-start-column="78" selection-end-line="368" selection-end-column="78" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test_pyinotify.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="439">
+          <caret line="50" column="10" lean-forward="true" selection-start-line="50" selection-start-column="10" selection-end-line="50" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/common_lib/sql_string.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="542">
+          <caret line="285" lean-forward="true" selection-start-line="285" selection-end-line="285" />
         </state>
       </provider>
     </entry>

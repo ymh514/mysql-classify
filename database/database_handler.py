@@ -27,10 +27,13 @@ class DatabaseHandler:
 
         self._sql = sql_string.SqlString(home_path)
         self._dict = dictionary.Dictionary()
-        tmp_path = home_path + "/mysql_resize"
+
+        upper_path,user_name = os.path.split(home_path)
+
+        tmp_path = upper_path + "/mysql_resize"
         # check dir
-        if os.path.exists(tmp_path):
-            if not os.path.isdir(tmp_path):
+        if os.path.exists(home_path):
+            if not os.path.exists(tmp_path):
                 os.mkdir(tmp_path)
         self._thumbnail_path = tmp_path
         self._face_ai_path = '/home/terry/Desktop/Nas/face/qimgserver'
@@ -67,6 +70,9 @@ class DatabaseHandler:
         # Create users table
         sql_str = self._sql.get_create_user_table_str()
         self._send_sql_cmd(sql_str)
+
+        return self._get_json_payload()
+
 
     def _new_user(self, user_name):
         """ When new user get in, insert to users table & create user's file_type table """
@@ -322,16 +328,17 @@ class DatabaseHandler:
         else:
             return self._get_json_payload(status=-2000, message="not found in database")
 
-    def delete_file_with_id(self, file_id):
-        """ Delete file with id """
-        sql_str = self._sql.get_info_by_summaryid_str(file_id)
+    def delete_file_with_nickname(self, nickname):
+        """ Delete file with unique nickname """
+        sql_str = self._sql.get_info_by_nickname_str(nickname)
         self._send_sql_cmd(sql_str)
 
         # got thing
         if self._cursor.rowcount > 0:
             result = self._cursor.fetchall()
-            user_name = result[0][0]
-            file_type = result[0][1]
+            file_id = result[0][0]
+            user_name = result[0][1]
+            file_type = result[0][2]
 
             user_table = user_name + '_'
             user_table += file_type
