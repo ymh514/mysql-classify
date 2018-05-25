@@ -29,11 +29,14 @@ class DatabaseHandler:
         self._dict = dictionary.Dictionary()
         tmp_path = home_path + "/mysql_resize"
         # check dir
-        if os.path.exists(tmp_path):
+        if os.path.exists(home_path):
             if not os.path.isdir(tmp_path):
                 os.mkdir(tmp_path)
         self._thumbnail_path = tmp_path
         self._face_ai_path = '/home/terry/Desktop/Nas/face/qimgserver'
+
+    def testdb(self):
+        self._cursor.execute('USE test_db;')
 
     def _send_sql_cmd(self, sql_str):
         """ Used to Send SQL Command """
@@ -67,6 +70,7 @@ class DatabaseHandler:
         # Create users table
         sql_str = self._sql.get_create_user_table_str()
         self._send_sql_cmd(sql_str)
+        return self._get_json_payload()
 
     def _new_user(self, user_name):
         """ When new user get in, insert to users table & create user's file_type table """
@@ -93,6 +97,13 @@ class DatabaseHandler:
 
         self._send_sql_cmd(insert_summary_sql_str)
         self._send_sql_cmd(insert_type_sql_str)
+
+    def _check_img_ready(self,path):
+        try:
+            Image.open(path)
+            return 0
+        except:
+            return 1
 
     def _set_thumbnail(self, file, user_name):
         """ Generate thumbnail """
@@ -163,6 +174,41 @@ class DatabaseHandler:
                 image.save(save_str)
 
                 image.close()
+
+            if file_type == 'video':
+                full_path = os.path.join(nas_path, file)
+                tmp_file_path = nas_path + '/'
+                tmp_file_path += 'video_tmp.jpg'
+                video_thumbnail_cmd = 'ffmpeg -i '
+                video_thumbnail_cmd += full_path
+                video_thumbnail_cmd += ' -ss 00:00:00 -vframes 1 '
+                video_thumbnail_cmd += tmp_file_path
+                p2 = subprocess.Popen([video_thumbnail_cmd, '-p'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+                # make sure generate
+
+                while self._check_img_ready(tmp_file_path):
+                    pass # do nothing
+
+                image = Image.open(tmp_file_path)
+                image.thumbnail((256, 256))
+                save_str = self._thumbnail_path + "/"
+                save_str += user_name
+
+                # check dir
+                if not os.path.isdir(save_str):
+                    os.mkdir(save_str)
+
+                save_str += "/"
+                save_str += str(summary_id)
+                save_str += ".jpg"
+                image.save(save_str)
+
+                # delete tmp img
+                try:
+                    os.remove(tmp_file_path)
+                except:
+                    pass
         else:
             pass
 

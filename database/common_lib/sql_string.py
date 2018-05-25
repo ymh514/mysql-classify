@@ -4,6 +4,7 @@ import os
 from PIL import Image
 
 from database.common_lib import dictionary, image_info
+import ffprobe3
 
 
 class TypeStruct:
@@ -12,7 +13,7 @@ class TypeStruct:
             'image': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,latitude FLOAT(6) DEFAULT NULL,'
                      'longitude FLOAT(6) DEFAULT NULL,city VARCHAR(20) DEFAULT NULL,taken_time INT DEFAULT NULL,'
                      'face_id INT DEFAULT NULL,PRIMARY KEY (id));',
-            'video': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
+            'video': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,duration FLOAT(10) DEFAULT NULL,PRIMARY KEY (id));',
             'music': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'document': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
             'archives': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
@@ -23,7 +24,7 @@ class TypeStruct:
     def type_insert_struct(self, file_type):
         return {
             'image': '(summary_id,latitude,longitude,city,taken_time)',
-            'video': '(summary_id)',
+            'video': '(summary_id,duration)',
             'music': '(summary_id)',
             'document': '(summary_id)',
             'archives': '(summary_id)',
@@ -155,6 +156,18 @@ class SqlString:
             type_sql += str(city)
             type_sql += "\',"
             type_sql += str(time)
+
+        if file_type == 'video':
+            duration = 'NULL'
+            try:
+                metadata = ffprobe3.FFProbe(nas_user_path + "/" + file_name)
+                for stream in metadata.streams:
+                    if stream.is_video():
+                        duration = str(stream.duration_seconds())
+            except:
+                pass
+            type_sql += ','
+            type_sql += duration
 
         type_sql += " From summary where summary.nickname=\""
         type_sql += file_name
