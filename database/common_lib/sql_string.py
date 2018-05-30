@@ -5,41 +5,15 @@ from PIL import Image
 
 from database.common_lib import dictionary, image_info
 import ffprobe3
-
-
-class TypeStruct:
-    def type_create_struct(self, file_type):
-        return {
-            'image': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,latitude FLOAT(6) DEFAULT NULL,'
-                     'longitude FLOAT(6) DEFAULT NULL,city VARCHAR(20) DEFAULT NULL,taken_time INT DEFAULT NULL,'
-                     'face_id INT DEFAULT NULL,PRIMARY KEY (id));',
-            'video': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,duration FLOAT(10) DEFAULT NULL,PRIMARY KEY (id));',
-            'music': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
-            'document': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
-            'archives': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
-            'file': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));',
-            'folder': '(id INT NOT NULL AUTO_INCREMENT,summary_id INT NOT NULL,PRIMARY KEY (id));'
-        }.get(file_type)
-
-    def type_insert_struct(self, file_type):
-        return {
-            'image': '(summary_id,latitude,longitude,city,taken_time)',
-            'video': '(summary_id,duration)',
-            'music': '(summary_id)',
-            'document': '(summary_id)',
-            'archives': '(summary_id)',
-            'file': '(summary_id)',
-            'folder': '(summary_id)'
-        }.get(file_type)
+from tinytag import TinyTag
 
 
 class SqlString:
-    def __init__(self,home_path):
+    def __init__(self, home_path):
         """ Initial """
 
         self._dict = dictionary.Dictionary()
         self._image_info = image_info.ImageInfo()
-        self._type_struct = TypeStruct()
         self._home_path = home_path
 
     def _convert_size(self, size_bytes):
@@ -71,10 +45,10 @@ class SqlString:
         sql_str += user_name
         sql_str += "_"
         sql_str += file_type
-        sql_str += self._type_struct.type_create_struct(file_type)
+        sql_str += self._dict.type_create_struct(file_type)
         return sql_str
 
-    def get_insert_tables_str(self, file_name, user_name,device_id,source_path,upload_mode,source_name=None):
+    def get_insert_tables_str(self, file_name, user_name, device_id, source_path, upload_mode, source_name=None):
         """ Return Instert tables SQL command """
 
         filename, file_extension = os.path.splitext(file_name)
@@ -128,7 +102,7 @@ class SqlString:
 
         type_sql = "INSERT INTO "
         type_sql += user_type_table
-        type_sql += self._type_struct.type_insert_struct(file_type)
+        type_sql += self._dict.type_insert_struct(file_type)
         type_sql += " SELECT id "
 
         if file_type == 'image':
@@ -168,6 +142,37 @@ class SqlString:
                 pass
             type_sql += ','
             type_sql += duration
+
+        if file_type == 'music':
+            title = 'NULL'
+            album = 'NULL'
+            artist = 'NULL'
+            duration = 'NULL'
+            samplerate = 'NULL'
+            try:
+                tag = TinyTag.get(nas_user_path + "/" + file_name)
+                if tag.title:
+                    title = tag.title
+                if tag.album:
+                    album = tag.album
+                if tag.artist:
+                    artist = tag.artist
+                if tag.duration:
+                    duration = tag.duration
+                if tag.samplerate:
+                    samplerate = tag.samplerate
+            except:
+                pass
+            type_sql += ",\""
+            type_sql += title
+            type_sql += "\",\""
+            type_sql += album
+            type_sql += "\",\""
+            type_sql += artist
+            type_sql += "\","
+            type_sql += str(duration)
+            type_sql += ","
+            type_sql += str(samplerate)
 
         type_sql += " From summary where summary.nickname=\""
         type_sql += file_name
@@ -235,9 +240,28 @@ class SqlString:
             sql += ","
             sql += table_str
             sql += ".face_id"
-            sql += " FROM summary INNER JOIN "
-        else:
-            sql += " FROM summary INNER JOIN "
+        elif file_type == 'video':
+            sql += ","
+            sql += table_str
+            sql += ".duration"
+        elif file_type == 'music':
+            sql += ","
+            sql += table_str
+            sql += ".title"
+            sql += ","
+            sql += table_str
+            sql += ".album"
+            sql += ","
+            sql += table_str
+            sql += ".artist"
+            sql += ","
+            sql += table_str
+            sql += ".duration"
+            sql += ","
+            sql += table_str
+            sql += ".samplerate"
+
+        sql += " FROM summary INNER JOIN "
         sql += table_str
         sql += " ON summary.id = "
         sql += user_name
@@ -276,18 +300,18 @@ class SqlString:
         sql_str += str(summary_id)
         return sql_str
 
-    def get_check_file_already_exist_str(self, path, file_name, user_name):
-        """ Return fetch from summary  """
-        sql_str = 'SELECT id FROM summary WHERE nickname=\''
-        sql_str += file_name
-        sql_str += '\' AND path=\''
-        sql_str += path
-        sql_str += '\' AND user=\''
-        sql_str += user_name
-        sql_str += '\';'
-        return sql_str
+    # def get_check_file_already_exist_str(self, path, file_name, user_name):
+    #     """ Return fetch from summary  """
+    #     sql_str = 'SELECT id FROM summary WHERE nickname=\''
+    #     sql_str += file_name
+    #     sql_str += '\' AND path=\''
+    #     sql_str += path
+    #     sql_str += '\' AND user=\''
+    #     sql_str += user_name
+    #     sql_str += '\';'
+    #     return sql_str
 
-    def get_update_file_table_str(self, file_name, user_name,summary_id):
+    def get_update_file_table_str(self, file_name, user_name, summary_id):
         """ Return update summary & type talbe str """
 
         filename, file_extension = os.path.splitext(file_name)
@@ -325,7 +349,6 @@ class SqlString:
         if file_type == 'image':
             # Set set thumbnail
 
-            ## FIXME
             image = Image.open(nas_user_path + "/" + file_name)  # load an image through PIL's Image object
             exif_data = self._image_info.get_exif_data(image)
             lat, lon = self._image_info.get_lat_lon(exif_data)
@@ -356,6 +379,66 @@ class SqlString:
             type_sql += " WHERE summary_id="
             type_sql += str(summary_id)
             type_sql += ";"
+
+        if file_type == 'video':
+            duration = 'NULL'
+            try:
+                metadata = ffprobe3.FFProbe(nas_user_path + "/" + file_name)
+                for stream in metadata.streams:
+                    if stream.is_video():
+                        duration = str(stream.duration_seconds())
+            except:
+                pass
+            type_sql += "UPDATE "
+            type_sql += user_name
+            type_sql += "_"
+            type_sql += file_type
+            type_sql += " SET duration="
+            type_sql += duration
+            type_sql += " WHERE summary_id="
+            type_sql += str(summary_id)
+            type_sql += ";"
+
+        if file_type == 'music':
+
+            title = 'NULL'
+            album = 'NULL'
+            artist = 'NULL'
+            duration = 'NULL'
+            samplerate = 'NULL'
+            try:
+                tag = TinyTag.get(nas_user_path + "/" + file_name)
+                if tag.title:
+                    title = tag.title
+                if tag.album:
+                    album = tag.album
+                if tag.artist:
+                    artist = tag.artist
+                if tag.duration:
+                    duration = tag.duration
+                if tag.samplerate:
+                    samplerate = tag.samplerate
+            except:
+                pass
+
+            type_sql += "UPDATE "
+            type_sql += user_name
+            type_sql += "_"
+            type_sql += file_type
+            type_sql += " SET title=\""
+            type_sql += title
+            type_sql += "\",album=\""
+            type_sql += album
+            type_sql += "\",artist=\""
+            type_sql += artist
+            type_sql += "\",duration="
+            type_sql += duration
+            type_sql += ",samplerate="
+            type_sql += samplerate
+            type_sql += " WHERE summary_id="
+            type_sql += str(summary_id)
+            type_sql += ";"
+
         return summary_sql, type_sql
 
     def get_info_by_summaryid_str(self, summary_id):
@@ -367,10 +450,10 @@ class SqlString:
 
     def get_initial_str(self):
         drop_sql_str = "DROP DATABASE IF EXISTS mydatabase;"
-        create_sql_str = "CREATE DATABASE mydatabase;"
+        create_sql_str = "CREATE DATABASE mydatabase CHARACTER SET utf8;"
         return drop_sql_str, create_sql_str
 
-    def get_delete_summary_type_with_id_str(self,user_table,summary_id):
+    def get_delete_summary_type_with_id_str(self, user_table, summary_id):
         """ Return delete 2 table sql cmd """
         sql_str = 'DELETE summary,'
         sql_str += user_table
@@ -383,7 +466,7 @@ class SqlString:
         sql_str += ';'
         return sql_str
 
-    def get_face_id_update_str(self,file_path,user_name,face_id):
+    def get_face_id_update_str(self, file_path, user_name, face_id):
         """ Return update image's face sql cmd """
         path, file = os.path.split(file_path)
 
@@ -399,5 +482,5 @@ class SqlString:
         sql_str += "\";"
         return sql_str
 
-    def get_update_file_with_id_str(self,file_path,summary_id,user_table):
+    def get_update_file_with_id_str(self, file_path, summary_id, user_table):
         """ Return update summary & type table sql cmd """

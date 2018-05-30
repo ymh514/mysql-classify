@@ -1,9 +1,11 @@
 import json
 import os
 import subprocess
-import sqlite3
 import time
 import shutil
+import mutagen.id3
+import mutagen.flac
+import mutagen.mp4
 
 from threading import Thread
 
@@ -44,10 +46,11 @@ class DatabaseHandler:
             self._cursor.execute(sql_str)
             self._database.commit()
         except Exception as e:
-            print('-----')
-            print(e)
-            print(sql_str)
-            print('-----')
+            # print('-----')
+            # print(e)
+            # print(sql_str)
+            # print('-----')
+            return -1
 
     def clear_all(self):
         """ Reset database & Create summary & users table """
@@ -56,13 +59,15 @@ class DatabaseHandler:
         self._send_sql_cmd(drop_str)
         self._send_sql_cmd(create_str)
         self._database.select_db("mydatabase")
+        self._database.set_charset("utf8")
 
         # clear thumbnail path
         try:
             shutil.rmtree(self._thumbnail_path)
             os.mkdir(self._thumbnail_path)
         except:
-            print("not found thumbnail path")
+            pass
+            # print("not found thumbnail path")
         # Create summary table
         sql_str = self._sql.get_create_summary_table_str()
         self._send_sql_cmd(sql_str)
@@ -98,12 +103,18 @@ class DatabaseHandler:
         self._send_sql_cmd(insert_summary_sql_str)
         self._send_sql_cmd(insert_type_sql_str)
 
-    def _check_img_ready(self,path):
+    def _check_img_ready(self, path):
         try:
             Image.open(path)
             return 0
         except:
             return 1
+
+    def _check_null(self,input_null):
+        if input_null == 'NULL':
+            return None
+        else:
+            return input_null
 
     def _set_thumbnail(self, file, user_name):
         """ Generate thumbnail """
@@ -126,12 +137,6 @@ class DatabaseHandler:
             if file_type == 'image':
                 ######## face classify
                 self.face_classify(nas_path, file, user_name)
-                # try:
-                # face_thread = Thread(target=self.face_classify,args=(path,file,user_name))
-                # face_thread.start()
-                # face_thread.join()
-                # except:
-                # print("Error : unable thread")
 
                 full_path = os.path.join(nas_path, file)
                 image = Image.open(full_path)
@@ -183,12 +188,13 @@ class DatabaseHandler:
                 video_thumbnail_cmd += full_path
                 video_thumbnail_cmd += ' -ss 00:00:00 -vframes 1 '
                 video_thumbnail_cmd += tmp_file_path
-                p2 = subprocess.Popen([video_thumbnail_cmd, '-p'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                p2 = subprocess.Popen([video_thumbnail_cmd, '-p'], shell=True, stdout=subprocess.PIPE,
+                                      stderr=subprocess.STDOUT)
 
                 # make sure generate
 
                 while self._check_img_ready(tmp_file_path):
-                    pass # do nothing
+                    pass  # do nothing
 
                 image = Image.open(tmp_file_path)
                 image.thumbnail((256, 256))
@@ -203,6 +209,57 @@ class DatabaseHandler:
                 save_str += str(summary_id)
                 save_str += ".jpg"
                 image.save(save_str)
+
+                # delete tmp img
+                try:
+                    os.remove(tmp_file_path)
+                except:
+                    pass
+
+            if file_type == 'music':
+                full_path = os.path.join(nas_path, file)
+
+                save_str = self._thumbnail_path + "/"
+                save_str += user_name
+
+                # check dir
+                if not os.path.isdir(save_str):
+                    os.mkdir(save_str)
+
+                save_str += "/"
+                save_str += str(summary_id)
+                save_str += ".jpg"
+
+                no_cover_flag = 0
+
+                try:
+                    id3 = mutagen.id3.ID3(full_path)
+                    open(save_str, 'wb').write(id3.getall('APIC')[0].data)
+                except mutagen.id3.ID3NoHeaderError:
+                    try:
+                        flac = mutagen.flac.FLAC(full_path)
+                        open(save_str, 'wb').write(flac.pictures[0].data)
+                    except mutagen.flac.FLACNoHeaderError:
+                        try:
+                            mp4 = mutagen.mp4.MP4(full_path)
+                            open(save_str, 'wb').write(mp4['covr'][0])
+                        except:
+                            no_cover_flag = 1
+
+                if no_cover_flag == 1:
+                    # copy
+                    image = Image.open('database/album_art_empty.png')
+                    save_str = self._thumbnail_path + "/"
+                    save_str += user_name
+
+                    # check dir
+                    if not os.path.isdir(save_str):
+                        os.mkdir(save_str)
+
+                    save_str += "/"
+                    save_str += str(summary_id)
+                    save_str += ".jpg"
+                    image.save(save_str)
 
                 # delete tmp img
                 try:
@@ -254,7 +311,7 @@ class DatabaseHandler:
         exsist_flag = self._check_nickname_in_database(nickname)
 
         if exsist_flag == -1:
-            return self._get_json_payload(status=-7,message='have same name in Nas')
+            return self._get_json_payload(status=-7, message='have same name in Nas')
 
         sql_str = self._sql.get_select_user_table_str()
         self._send_sql_cmd(sql_str)
@@ -284,36 +341,60 @@ class DatabaseHandler:
     def get_user_type_table(self, user_name, file_type):
         """ Return user's (type) table with id """
         sql_str = self._sql.get_user_file_type_str(user_name, file_type)
-        self._send_sql_cmd(sql_str)
-        print(sql_str)
+        catch_flag = self._send_sql_cmd(sql_str)
+
+        if catch_flag == -1:
+            # error
+            return self._get_json_payload(status=-3000, message="The table isn't exist in database.")
+
         if self._cursor.rowcount > 0:
             # summary.id,type,nickname,nas_path,m_time,size,device_id,upload_mode
             data_list = []
             result = self._cursor.fetchall()
+            # print(result)
+
             for row in result:
                 temp = dict()
-                temp['id'] = row[0]
-                temp['type'] = row[1]
-                temp['file_name'] = row[2]
-                temp['nas_path'] = row[3]
-                temp['m_time'] = row[4]
-                temp['size'] = row[5]
-                temp['device_id'] = row[6]
-                temp['upload_mode'] = row[7]
+                temp['id'] = self._check_null(row[0])
+                temp['type'] = self._check_null(row[1])
+                temp['file_name'] = self._check_null(row[2])
+                temp['nas_path'] = self._check_null(row[3])
+                temp['m_time'] = self._check_null(row[4])
+                temp['size'] = self._check_null(row[5])
+                temp['device_id'] = self._check_null(row[6])
+                temp['upload_mode'] = self._check_null(row[7])
 
                 # # image return face_id
                 if file_type == 'image':
                     image_info = dict()
-                    image_info['latitude'] = row[8]
-                    image_info['longitude'] = row[9]
-                    image_info['city'] = row[10]
-                    image_info['taken_time'] = row[11]
+                    image_info['latitude'] = self._check_null(row[8])
+                    image_info['longitude'] = self._check_null(row[9])
+                    image_info['city'] = self._check_null(row[10])
+                    image_info['taken_time'] = self._check_null(row[11])
                     if row[12] is None:
                         image_info['face_id'] = -1
                     else:
-                        image_info['face_id'] = row[12]
+                        image_info['face_id'] = self._check_null(row[12])
 
                     temp['image_info'] = image_info
+
+                if file_type == 'video':
+                    # # video return duration
+                    video_info = dict()
+                    video_info['duration'] = self._check_null(row[8])
+
+                    temp['video_info'] = video_info
+
+                if file_type == 'music':
+                    music_info = dict()
+                    music_info['title'] = self._check_null(row[8])
+                    music_info['album'] = self._check_null(row[9])
+                    music_info['artist'] = self._check_null(row[10])
+                    music_info['duration'] = self._check_null(row[11])
+                    music_info['samplerate'] = self._check_null(row[12])
+
+                    temp['music_info'] = music_info
+
                 data_list.append(temp)
 
             self._database.commit()
@@ -322,12 +403,19 @@ class DatabaseHandler:
             pack_data_list['list'] = data_list
             return self._get_json_payload(data=pack_data_list)
         else:
-            return self._get_json_payload(status=-2000, message="not found in database")
+            # message = file_type
+            # message += ' is empty.'
+            # return self._get_json_payload(message=message)
+            return self._get_json_payload(status=-2000, message="The type table is empty in database.")
 
     def get_files_under_folder(self, folder_path):
         """ Return files under folder with id """
         sql_str = self._sql.get_files_under_folder_str(folder_path)
-        self._send_sql_cmd(sql_str)
+        catch_flag = self._send_sql_cmd(sql_str)
+
+        if catch_flag == -1:
+            # error
+            return self._get_json_payload(status=-3000, message="The table isn't exist in database.")
 
         if self._cursor.rowcount > 0:
             data_list = []
@@ -350,12 +438,16 @@ class DatabaseHandler:
             pack_data_list['list'] = data_list
             return self._get_json_payload(data=pack_data_list)
         else:
-            return self._get_json_payload(status=-2000, message="not found in database")
+            return self._get_json_payload(status=-2000, message="Can't found in database.")
 
     def get_file_path_with_id(self, file_id):
         """ Return file's path with file id (summary table) """
         sql_str = self._sql.get_file_path_with_id_str(file_id)
-        self._send_sql_cmd(sql_str)
+        catch_flag = self._send_sql_cmd(sql_str)
+
+        if catch_flag == -1:
+            # error
+            return self._get_json_payload(status=-3000, message="The table isn't exist in database.")
 
         if self._cursor.rowcount > 0:
             result = self._cursor.fetchall()
@@ -366,12 +458,16 @@ class DatabaseHandler:
             self._database.commit()
             return self._get_json_payload(path=return_path)
         else:
-            return self._get_json_payload(status=-2000, message="not found in database")
+            return self._get_json_payload(status=-2000, message="Can't found in database.")
 
     def delete_file_with_id(self, file_id):
         """ Delete file with id """
         sql_str = self._sql.get_info_by_summaryid_str(file_id)
-        self._send_sql_cmd(sql_str)
+        catch_flag = self._send_sql_cmd(sql_str)
+
+        if catch_flag == -1:
+            # error
+            return self._get_json_payload(status=-3000, message="The table isn't exist in database.")
 
         # got thing
         if self._cursor.rowcount > 0:
@@ -386,14 +482,14 @@ class DatabaseHandler:
 
             self._send_sql_cmd(delete_sql)
 
-            #delete thumbnail
+            # delete thumbnail
             thumbnail_path = self._thumbnail_path + '/'
             thumbnail_path += user_name
             thumbnail_path += '/'
             thumbnail_path += str(file_id)
             thumbnail_path += '.jpg'
 
-            print(thumbnail_path)
+            # print(thumbnail_path)
             try:
                 os.remove(thumbnail_path)
             except:
@@ -402,12 +498,16 @@ class DatabaseHandler:
             # change
             return self._get_json_payload()
         else:
-            return self._get_json_payload(status=-2000, message="not found in database")
+            return self._get_json_payload(status=-2000, message="Can't found in database.")
 
     def rename_file_with_id(self, new_nickname, file_id):
         """ Update file in database with new file_path and id """
         sql_str = self._sql.get_info_by_summaryid_str(file_id)
-        self._send_sql_cmd(sql_str)
+        catch_flag = self._send_sql_cmd(sql_str)
+
+        if catch_flag == -1:
+            # error
+            return self._get_json_payload(status=-3000, message="The table isn't exist in database.")
 
         # got thing
         if self._cursor.rowcount > 0:
@@ -425,12 +525,16 @@ class DatabaseHandler:
 
             return self._get_json_payload()
         else:
-            return self._get_json_payload(status=-2000, message="not found in database")
+            return self._get_json_payload(status=-2000, message="Can't found in database.")
 
     def get_image_thumbnail(self, image_id):
         """ Return image thumbnail with id """
         sql_str = self._sql.get_info_by_summaryid_str(image_id)
-        self._send_sql_cmd(sql_str)
+        catch_flag = self._send_sql_cmd(sql_str)
+
+        if catch_flag == -1:
+            # error
+            return self._get_json_payload(status=-3000, message="The table isn't exist in database.")
 
         # got thing
         if self._cursor.rowcount > 0:
@@ -438,7 +542,7 @@ class DatabaseHandler:
             user_name = result[0][0]
             file_type = result[0][1]
             if not file_type == "image":
-                return self._get_json_payload(status=-2000, message="there is no thumbnail for this type")
+                return self._get_json_payload(status=-2100, message="there is no thumbnail for this type")
             thumbnail_path = self._thumbnail_path + "/"
             thumbnail_path += user_name
             thumbnail_path += "/"
@@ -446,7 +550,7 @@ class DatabaseHandler:
             thumbnail_path += ".jpg"
             return self._get_json_payload(path=thumbnail_path)
         else:
-            return self._get_json_payload(status=-2000, message="not found in database")
+            return self._get_json_payload(status=-2000, message="Can't found in database")
 
     def face_classify(self, path, file, user_name):
 
@@ -478,9 +582,10 @@ class DatabaseHandler:
                 val = int(getgetget[0])
                 if val != -1:
                     get_id = str(val)
-                    print("Found face : " + get_id)
+                    # print("Found face : " + get_id)
             except ValueError:
-                print("Not found wait 1 second !")
+                pass
+                # print("Not found wait 1 second !")
 
             if get_id is not '-1':
                 break
@@ -489,11 +594,12 @@ class DatabaseHandler:
 
         # update img table's id col
         if get_id is not '-1':
-            print("---------- Found face id : " + get_id + " ----------")
+            # print("---------- Found face id : " + get_id + " ----------")
             type_sql = self._sql.get_face_id_update_str(file_path, user_name, get_id)
             self._send_sql_cmd(type_sql)
         else:
-            print('---------- Not found face id ----------')
+            pass
+            # print('---------- Not found face id ----------')
 
     def _check_nickname_in_database(self, nickname):
         """ Private : Check nickname in database or not  """
@@ -510,7 +616,6 @@ class DatabaseHandler:
         else:
             return 0
 
-
     def check_nickname_in_database(self, nickname):
         """ Check nickname in database or not  """
         # exist return -1
@@ -522,6 +627,6 @@ class DatabaseHandler:
 
         self._send_sql_cmd(check_sql)
         if self._cursor.rowcount > 0:
-            return self._get_json_payload(status=-7,message='have same name in Nas')
+            return self._get_json_payload(status=-7, message='Already have same name in Nas.')
         else:
             return self._get_json_payload()
